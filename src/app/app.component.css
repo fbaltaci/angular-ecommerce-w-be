@@ -1,0 +1,31 @@
+/* app.component.css */
+.navbar {
+  padding: 1rem;
+}
+
+.card {
+  border: none;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.card-title {
+  font-size: 1.2rem;
+  margin-bottom: 0.5rem;
+}
+
+.card-text {
+  font-size: 1rem;
+  margin-bottom: 1rem;
+}
+
+.card-footer {
+  border-top: none;
+}
+
+.btn {
+  border-radius: 25px;
+}
+
+.text-warning i {
+  font-size: 1rem;
+}

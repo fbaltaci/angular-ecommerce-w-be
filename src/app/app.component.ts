@@ -1,13 +1,46 @@
+import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
+import { BasketService } from './services/basket.service';
+import { IGetAllProductsResponse } from './models/IGetAllProductsResponse';
+import { IProductDetailsResponse } from './models/IProductDetailsResponse';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet],
+  imports: [RouterOutlet, CommonModule],
   templateUrl: './app.component.html',
-  styleUrl: './app.component.css'
+  styleUrls: ['./app.component.css'],
 })
 export class AppComponent {
   title = 'angular-ecommerce-w-be';
+
+  getAllProductsResponse: IGetAllProductsResponse = {
+    message: '',
+    result: '',
+    data: [] as IProductDetailsResponse[],
+  };
+
+  /**
+   * Constructor
+   */
+  constructor(private _basketService: BasketService) {}
+
+  /**
+   * ngOnInit
+   */
+  ngOnInit(): void {
+    this.getAllProductsFromService();
+    console.log('ngOnInit');
+  }
+
+  /**
+   * Calls getAllProducts Service
+   */
+  getAllProductsFromService(): void {
+    this._basketService.getAllProducts().subscribe((response) => {
+      this.getAllProductsResponse = response;
+    });
+    console.log('this.getAllProductsResponse: ', this.getAllProductsResponse);
+  }
 }
