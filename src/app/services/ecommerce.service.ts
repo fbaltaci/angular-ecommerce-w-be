@@ -2,18 +2,18 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable, tap } from 'rxjs';
 import { IGetAllProductsResponse } from '../models/IGetAllProductsResponse';
-import { IUserRegisterPayload } from '../models/IUserRegisterPayload';
-import { IUserRegisterResponse } from '../models/IUserRegisterResponse';
 import { IUserLoginPayload } from '../models/IUserLoginPayload';
 import { IUserLoginResponse } from '../models/IUserLoginResponse';
+import { IUserRegisterPayload } from '../models/IUserRegisterPayload';
+import { IUserRegisterResponse } from '../models/IUserRegisterResponse';
 
 /**
- * BasketService
+ * ECommerceService
  */
 @Injectable({
   providedIn: 'root',
 })
-export class BasketService {
+export class ECommerceService {
   private baseURL = 'http://localhost:3000/api';
   private tokenKey = 'authToken';
 

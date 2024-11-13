@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
 import { IGetAllProductsResponse } from '../../models/IGetAllProductsResponse';
-import { BasketService } from '../../services/basket.service';
+import { ECommerceService } from '../../services/ecommerce.service';
 import { IProductDetailsResponse } from '../../models/IProductDetailsResponse';
 
 /**
@@ -27,9 +27,9 @@ export class ProductsPageComponent {
   /**
    * Constructor
    *
-   * @param _basketService { BasketService }
+   * @param _basketService { ECommerceService }
    */
-  constructor(private _basketService: BasketService) {}
+  constructor(private _basketService: ECommerceService) {}
 
   /**
    * ngOnInit
