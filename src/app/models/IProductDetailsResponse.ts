@@ -3,14 +3,11 @@
  */
 export interface IProductDetailsResponse {
   productId: number;
-  productSku: string;
-  productName: string;
-  productPrice: number;
+  quantity: number;
   productShortName: string;
-  productDescription: string;
-  createdDate: string;
-  deliveryTimeSpan: string;
-  categoryId: number;
-  productImageUrl: string;
+  addedDate: string;
+  productName: string;
   categoryName: string;
+  productImageUrl: string;
+  productPrice: number;
 }

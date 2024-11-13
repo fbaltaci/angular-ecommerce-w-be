@@ -30,8 +30,20 @@ export class AppComponent {
    * ngOnInit
    */
   ngOnInit(): void {
+    this.getUserLoginFromService();
     this.getAllProductsFromService();
     console.log('ngOnInit');
+  }
+
+  getUserLoginFromService(): void {
+    this._basketService
+      .userLogin({
+        username: 'testuser',
+        pwd: 'password123',
+      })
+      .subscribe((response) => {
+        console.log(response);
+      });
   }
 
   /**
