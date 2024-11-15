@@ -1,7 +1,7 @@
 /**
- * Interface for getAllProducts.data Response
+ * Interface for the cart item
  */
-export interface IProductDetailsResponse {
+export interface ICartItem {
   productId: number;
   quantity: number;
   productShortName: string;
