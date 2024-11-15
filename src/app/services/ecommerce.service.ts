@@ -1,6 +1,7 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable, tap } from 'rxjs';
+import { ICartItemsResponse } from '../models/ICartItemsResponse';
 import { IGetAllProductsResponse } from '../models/IGetAllProductsResponse';
 import { IUserLoginPayload } from '../models/IUserLoginPayload';
 import { IUserLoginResponse } from '../models/IUserLoginResponse';
@@ -14,8 +15,8 @@ import { IUserRegisterResponse } from '../models/IUserRegisterResponse';
   providedIn: 'root',
 })
 export class ECommerceService {
-  private baseURL = 'http://localhost:3000/api';
-  private tokenKey = 'authToken';
+  private readonly baseURL: string = 'http://localhost:3000/api';
+  private readonly tokenKey: string = 'authToken';
 
   /**
    * Constructor
@@ -65,11 +66,17 @@ export class ECommerceService {
   }
 
   /**
-   * Stores the token in local storage
-   * @param token Authentication token
+   * Fetches cart items for the specified customer ID
+   * @param custId The ID of the customer
+   * @returns Observable of cart items
    */
-  private storeToken(token: string): void {
-    localStorage.setItem(this.tokenKey, token);
+  getCartItems(custId: number): Observable<ICartItemsResponse> {
+    const endpoint = `${this.baseURL}/ecommerce/cart/${custId}`;
+    const headers = new HttpHeaders().set(
+      'Authorization',
+      `Bearer ${this.getToken()}`
+    );
+    return this.http.get<ICartItemsResponse>(endpoint, { headers });
   }
 
   /**
@@ -85,5 +92,13 @@ export class ECommerceService {
    */
   clearToken(): void {
     localStorage.removeItem(this.tokenKey);
+  }
+
+  /**
+   * Stores the token in local storage
+   * @param token Authentication token
+   */
+  private storeToken(token: string): void {
+    localStorage.setItem(this.tokenKey, token);
   }
 }
