@@ -1,1 +1,32 @@
-<p>about-us-page works!</p>
+<div class="about-container">
+  <div class="about-header">
+    <h1>About Me</h1>
+    <p class="profession">{{ profession }}</p>
+  </div>
+
+  <div class="about-body">
+    <p>
+      Hello! I'm <strong>{{ name }}</strong>. {{ description }}
+    </p>
+
+    <h2>What I Did</h2>
+    <p>This website was built using:</p>
+    <ul>
+      <li *ngFor="let tech of techStack">
+        <i class="bi bi-check-circle"></i> {{ tech }}
+      </li>
+    </ul>
+
+    <h2>My Journey</h2>
+    <p>{{ experience }}</p>
+  </div>
+
+  <div class="about-footer">
+    <h2>Let's Connect</h2>
+    <ul class="contact-list">
+      <li><a [href]="links.github" target="_blank"><i class="bi bi-github"></i> GitHub</a></li>
+      <li><a [href]="links.linkedin" target="_blank"><i class="bi bi-linkedin"></i> LinkedIn</a></li>
+      <li><a [href]="'mailto:' + links.email"><i class="bi bi-envelope"></i> {{ links.email }}</a></li>
+    </ul>
+  </div>
+</div>

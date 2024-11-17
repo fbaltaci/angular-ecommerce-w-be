@@ -2,6 +2,7 @@ import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { ICartItem } from '../../models/ICartItem';
 import { ECommerceService } from '../../services/ecommerce.service';
+import { ICartItemsResponse } from '../../models/ICartItemsResponse';
 
 /**
  * Cart Page Component
@@ -15,6 +16,7 @@ import { ECommerceService } from '../../services/ecommerce.service';
 })
 export class CartPageComponent implements OnInit {
   cartItem!: ICartItem[];
+  cartItemsResponse: ICartItemsResponse[] = [];
   cartTotal: number = 0;
   customerId: number = 1773; // Use actual customer ID
 
@@ -36,20 +38,32 @@ export class CartPageComponent implements OnInit {
    * Fetches cart items for the customer and calculates total
    */
   private fetchCartItems(): void {
-    this._ecommerceService
-      .getCartItems(this.customerId)
-      .subscribe((response) => {
-        this.cartItem = response.data.cartItems;
-        this.calculateCartTotal();
-      });
+    if (this.customerId) {
+      this._ecommerceService
+        .getCartItems(this.customerId)
+        .subscribe((cartItemsResponse) => {
+          this.cartItem = cartItemsResponse.data.cartItems;
+          this.cartItemsResponse = Array.isArray(cartItemsResponse)
+            ? cartItemsResponse
+            : [cartItemsResponse];
+          this.calculateCartTotal();
+        });
+    }
   }
 
   /**
    * Calculates the total price of items in the cart
    */
   private calculateCartTotal(): void {
-    if (!this.cartItem || !Array.isArray(this.cartItem)) return;
+    if (!this.cartItemsResponse || !Array.isArray(this.cartItemsResponse))
+      return;
 
-    this.cartTotal = this.cartItem.length;
+    this.cartTotal = this.cartItemsResponse.reduce((total, cart) => {
+      const cartSubtotal = cart.data.cartItems.reduce(
+        (subtotal, item) => subtotal + item.productPrice * item.quantity,
+        0
+      );
+      return total + cartSubtotal;
+    }, 0);
   }
 }
