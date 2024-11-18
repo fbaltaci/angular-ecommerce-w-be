@@ -10,5 +10,5 @@ import { CommonModule } from '@angular/common';
   styleUrl: './product-details.component.css',
 })
 export class ProductDetailsComponent {
-  @Input() data!: IProductDetailsResponse[];
+  @Input() productDetail!: IProductDetailsResponse;
 }
