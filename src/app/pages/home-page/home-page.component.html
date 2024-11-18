@@ -1,34 +1,52 @@
 <div class="home-container">
-  <!-- Hero Section -->
-  <section class="hero-section text-center">
-    <h1>Welcome to My Portfolio</h1>
-    <p>
-      Explore my e-commerce application, built to demonstrate my skills in full-stack development.
-    </p>
-    <a routerLink="/products" class="btn btn-primary mt-3">View Products</a>
+  <!-- Banner Section -->
+  <section class="banner-section text-center py-5">
+    <div class="banner-content">
+      <h1>Fresh, Organic, and Reliable</h1>
+      <p>Discover the best in fresh produce, durable technology, home essentials, and so much more!</p>
+      <p><strong>Free delivery on orders over $50!</strong></p>
+      <a routerLink="/products" class="btn btn-primary mt-3">Shop Now</a>
+    </div>
   </section>
 
-  <!-- Highlights Section -->
-  <section class="highlights-section mt-5">
-    <div class="row">
-      <div *ngFor="let highlight of highlights" class="col-md-6 col-lg-3 mb-4">
-        <div class="highlight-card p-3 text-center shadow-sm">
-          <i [class]="highlight.icon + ' highlight-icon mb-3'"></i>
-          <h5>{{ highlight.title }}</h5>
-          <p>{{ highlight.description }}</p>
+  <!-- Best Sellers Section -->
+  <section class="best-sellers-section text-center mt-5">
+    <h2>Best Sellers</h2>
+    <div class="row mt-4">
+      <div *ngFor="let product of bestSellers" class="col-md-6 col-lg-3 mb-4">
+        <div class="product-card shadow-sm p-3 text-center">
+          <img [src]="product.productImageUrl" alt="{{ product.productName }}" class="img-fluid mb-3" />
+          <h5>{{ product.productName }}</h5>
+          <p>${{ product.productPrice }}</p>
+          <a [routerLink]="'/product/' + product.productId" class="btn btn-outline-primary btn-sm">View Details</a>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- Tech Stack Section -->
-  <section class="tech-stack-section text-center mt-5">
-    <h2>Technologies Used</h2>
-    <p class="mt-3">This project showcases expertise in:</p>
-    <div class="d-flex flex-wrap justify-content-center mt-3">
-      <span *ngFor="let tech of techStack" class="badge bg-primary m-1">
-        {{ tech }}
-      </span>
+  <!-- Customer Favorites Section -->
+  <section class="customer-favorites-section text-center mt-5">
+    <h2>Customer's Favorites</h2>
+    <div class="row mt-4">
+      <div *ngFor="let product of customerFavorites" class="col-md-6 col-lg-3 mb-4">
+        <div class="product-card shadow-sm p-3 text-center">
+          <img [src]="product.productImageUrl" alt="{{ product.productName }}" class="img-fluid mb-3" />
+          <h5>{{ product.productName }}</h5>
+          <p>${{ product.productPrice }}</p>
+          <a [routerLink]="'/product/' + product.productId" class="btn btn-outline-primary btn-sm">View Details</a>
+        </div>
+      </div>
     </div>
   </section>
+
+  <!-- Footer Section -->
+  <footer class="footer-section text-center mt-5 py-4 bg-light">
+    <p>&copy; 2024 Your Portfolio E-Commerce | Built with <i class="bi bi-heart-fill text-danger"></i> by You</p>
+    <p>
+      Follow us on
+      <a href="https://twitter.com" target="_blank" class="text-primary">Twitter</a>,
+      <a href="https://facebook.com" target="_blank" class="text-primary">Facebook</a>, and
+      <a href="https://instagram.com" target="_blank" class="text-primary">Instagram</a>.
+    </p>
+  </footer>
 </div>
