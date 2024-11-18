@@ -7,6 +7,8 @@ import { IUserLoginPayload } from '../models/IUserLoginPayload';
 import { IUserLoginResponse } from '../models/IUserLoginResponse';
 import { IUserRegisterPayload } from '../models/IUserRegisterPayload';
 import { IUserRegisterResponse } from '../models/IUserRegisterResponse';
+import { IPostCartItemsResponse } from '../models/IPostCartItemsResponse';
+import { ICartData } from '../models/ICartData';
 
 /**
  * ECommerceService
@@ -77,6 +79,24 @@ export class ECommerceService {
       `Bearer ${this.getToken()}`
     );
     return this.http.get<ICartItemsResponse>(endpoint, { headers });
+  }
+
+  /**
+   * Adds an item to the cart
+   *
+   * @param custId Customer ID
+   * @param productId Product ID
+   */
+  postCartItems(payload: ICartData): Observable<IPostCartItemsResponse> {
+    const endpoint = `${this.baseURL}/ecommerce/cart`;
+    const headers = new HttpHeaders().set(
+      'Authorization',
+      `Bearer ${this.getToken()}`
+    );
+
+    return this.http.post<IPostCartItemsResponse>(endpoint, payload, {
+      headers,
+    });
   }
 
   /**
