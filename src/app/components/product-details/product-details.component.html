@@ -1,0 +1,17 @@
+<div class="col-md-3 mb-4" *ngFor="let productDetails of data">
+    <div class="card h-100">
+        <img [src]="productDetails.productImageUrl" class="card-img-top" alt="{{ productDetails.productShortName }}">
+        <div class="card-body">
+            <h5 class="card-title">{{ productDetails.productName }}</h5>
+            <p class="card-text text-danger">{{ productDetails.productPrice }}</p>
+            <div>
+                <span class="text-muted">({{ productDetails.categoryName }})</span>
+            </div>
+        </div>
+        <div class="card-footer bg-transparent">
+            <button class="btn btn-success btn-sm w-100">
+                <i class="fas fa-shopping-cart"></i> Add to Cart
+            </button>
+        </div>
+    </div>
+</div>

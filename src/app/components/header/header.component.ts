@@ -3,6 +3,7 @@ import { Component } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { ECommerceService } from '../../services/ecommerce.service';
 import { CartPreviewComponent } from '../cart-preview/cart-preview.component';
+import { TopNavComponent } from '../top-nav/top-nav.component';
 
 /**
  * Header component
@@ -10,7 +11,7 @@ import { CartPreviewComponent } from '../cart-preview/cart-preview.component';
 @Component({
   selector: 'app-header',
   standalone: true,
-  imports: [CommonModule, RouterModule, CartPreviewComponent],
+  imports: [CommonModule, RouterModule, CartPreviewComponent, TopNavComponent],
   templateUrl: './header.component.html',
   styleUrls: ['./header.component.css'],
 })

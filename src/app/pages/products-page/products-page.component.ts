@@ -3,6 +3,7 @@ import { Component } from '@angular/core';
 import { IGetAllProductsResponse } from '../../models/IGetAllProductsResponse';
 import { ECommerceService } from '../../services/ecommerce.service';
 import { IProductDetailsResponse } from '../../models/IProductDetailsResponse';
+import { ProductDetailsComponent } from '../../components/product-details/product-details.component';
 
 /**
  * ProductsPageComponent
@@ -10,7 +11,7 @@ import { IProductDetailsResponse } from '../../models/IProductDetailsResponse';
 @Component({
   selector: 'app-products-page',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, ProductDetailsComponent],
   templateUrl: './products-page.component.html',
   styleUrl: './products-page.component.css',
 })
