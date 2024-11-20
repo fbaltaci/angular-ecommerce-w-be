@@ -1,8 +1,5 @@
-<!-- Top Nav -->
-
 <app-top-nav></app-top-nav>
 
-<!-- Header -->
 <nav class="navbar navbar-expand-lg navbar-light bg-success">
     <a class="navbar-brand text-white" [routerLink]="['/']">FB - ECommerce</a>
     <ul class="navbar-nav ml-auto">
@@ -16,14 +13,12 @@
             <button class="nav-link btn btn-link text-white" [routerLink]="['/about-us']">About Us</button>
         </li>
 
-        <!-- Cart Item with Hover Preview -->
         <li class="nav-item position-relative" (mouseenter)="showCartPreview = true"
             (mouseleave)="showCartPreview = false">
             <button class="nav-link btn btn-link text-white" [routerLink]="['/cart']">
                 <i class="fas fa-shopping-cart"></i>
                 <span class="badge badge-pill badge-light">{{ cartItemCount }}</span>
             </button>
-            <!-- Cart Preview Dropdown -->
             <div class="cart-preview-dropdown" *ngIf="showCartPreview">
                 <app-cart-preview [custId]="customerId"></app-cart-preview>
             </div>
