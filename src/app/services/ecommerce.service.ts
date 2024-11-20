@@ -9,6 +9,9 @@ import { IUserRegisterPayload } from '../models/IUserRegisterPayload';
 import { IUserRegisterResponse } from '../models/IUserRegisterResponse';
 import { IPostCartItemsResponse } from '../models/IPostCartItemsResponse';
 import { ICartData } from '../models/ICartData';
+import { IPostProduct } from '../models/IPostProduct';
+import { IDeleteProductResponse } from '../models/IDeleteProductResponse';
+import { IDeleteCartResponse } from '../models/IDeleteCartResponse';
 
 /**
  * ECommerceService
@@ -68,6 +71,95 @@ export class ECommerceService {
   }
 
   /**
+   * Fetches products by category id
+   *
+   * @param categoryId Category ID
+   * @returns Observable of products
+   */
+  getProductsByCategory(
+    categoryId: number
+  ): Observable<IGetAllProductsResponse> {
+    const endpoint = `${this.baseURL}/ecommerce/products/${categoryId}`;
+    const headers = new HttpHeaders().set(
+      'Authorization',
+      `Bearer ${this.getToken()}`
+    );
+
+    return this.http.get<IGetAllProductsResponse>(endpoint, { headers });
+  }
+
+  /**
+   * Fetches products by product ID
+   *
+   * @param payload Payload
+   * @returns Observable of products
+   */
+  postProducts(payload: IPostProduct): Observable<IGetAllProductsResponse> {
+    const endpoint = `${this.baseURL}/ecommerce/products`;
+    const headers = new HttpHeaders().set(
+      'Authorization',
+      `Bearer ${this.getToken()}`
+    );
+
+    return this.http.post<IGetAllProductsResponse>(endpoint, payload, {
+      headers,
+    });
+  }
+
+  /**
+   * Updates a product
+   *
+   * @param productId Product ID
+   * @param payload Payload
+   * @returns Observable of products
+   */
+  putProducts(
+    productId: number,
+    payload: IPostProduct
+  ): Observable<IGetAllProductsResponse> {
+    const endpoint = `${this.baseURL}/ecommerce/products/${productId}`;
+    const headers = new HttpHeaders().set(
+      'Authorization',
+      `Bearer ${this.getToken()}`
+    );
+
+    return this.http.put<IGetAllProductsResponse>(endpoint, payload, {
+      headers,
+    });
+  }
+
+  /**
+   * Deletes a product
+   *
+   * @param productId Product ID
+   * @returns Observable of products
+   */
+  deleteProduct(productId: number): Observable<IDeleteProductResponse> {
+    const endpoint = `${this.baseURL}/ecommerce/product/${productId}`;
+    const headers = new HttpHeaders().set(
+      'Authorization',
+      `Bearer ${this.getToken()}`
+    );
+
+    return this.http.delete<IDeleteProductResponse>(endpoint, { headers });
+  }
+
+  /**
+   * Fetches all cart items
+   *
+   * @returns Observable of cart items
+   */
+  getAllCarts(): Observable<ICartItemsResponse> {
+    const endpoint = `${this.baseURL}/ecommerce/cart`;
+    const headers = new HttpHeaders().set(
+      'Authorization',
+      `Bearer ${this.getToken()}`
+    );
+
+    return this.http.get<ICartItemsResponse>(endpoint, { headers });
+  }
+
+  /**
    * Fetches cart items for the specified customer ID
    * @param custId The ID of the customer
    * @returns Observable of cart items
@@ -95,6 +187,42 @@ export class ECommerceService {
     );
 
     return this.http.post<IPostCartItemsResponse>(endpoint, payload, {
+      headers,
+    });
+  }
+
+  /**
+   * Updates the cart items
+   *
+   * @param payload Payload
+   * @returns Observable of cart items
+   */
+  putCartItems(payload: ICartData): Observable<IPostCartItemsResponse> {
+    const endpoint = `${this.baseURL}/ecommerce/cart`;
+    const headers = new HttpHeaders().set(
+      'Authorization',
+      `Bearer ${this.getToken()}`
+    );
+
+    return this.http.put<IPostCartItemsResponse>(endpoint, payload, {
+      headers,
+    });
+  }
+
+  /**
+   * Deletes a cart item
+   *
+   * @param cartId Cart ID
+   * @returns Observable of cart items
+   */
+  deleteCart(cartId: number): Observable<IDeleteCartResponse> {
+    const endpoint = `${this.baseURL}/ecommerce/cart/${cartId}`;
+    const headers = new HttpHeaders().set(
+      'Authorization',
+      `Bearer ${this.getToken()}`
+    );
+
+    return this.http.put<IDeleteCartResponse>(endpoint, {
       headers,
     });
   }
