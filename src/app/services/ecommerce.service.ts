@@ -63,11 +63,7 @@ export class ECommerceService {
    */
   getAllProducts(): Observable<IGetAllProductsResponse> {
     const endpoint = `${this.baseURL}/ecommerce/products`;
-    const headers = new HttpHeaders().set(
-      'Authorization',
-      `Bearer ${this.getToken()}`
-    );
-    return this.http.get<IGetAllProductsResponse>(endpoint, { headers });
+    return this.http.get<IGetAllProductsResponse>(endpoint);
   }
 
   /**
@@ -80,12 +76,7 @@ export class ECommerceService {
     categoryId: number
   ): Observable<IGetAllProductsResponse> {
     const endpoint = `${this.baseURL}/ecommerce/products/${categoryId}`;
-    const headers = new HttpHeaders().set(
-      'Authorization',
-      `Bearer ${this.getToken()}`
-    );
-
-    return this.http.get<IGetAllProductsResponse>(endpoint, { headers });
+    return this.http.get<IGetAllProductsResponse>(endpoint);
   }
 
   /**
