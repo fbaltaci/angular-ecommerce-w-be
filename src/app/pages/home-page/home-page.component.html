@@ -14,12 +14,7 @@
     <h2>Best Sellers</h2>
     <div class="row mt-4">
       <div *ngFor="let product of bestSellers" class="col-md-6 col-lg-3 mb-4">
-        <div class="product-card shadow-sm p-3 text-center">
-          <img [src]="product.productImageUrl" alt="{{ product.productName }}" class="img-fluid mb-3" />
-          <h5>{{ product.productName }}</h5>
-          <p>${{ product.productPrice }}</p>
-          <a [routerLink]="'/product/' + product.productId" class="btn btn-outline-primary btn-sm">View Details</a>
-        </div>
+        <app-product-details [productDetail]="product"></app-product-details>
       </div>
     </div>
   </section>
@@ -29,12 +24,7 @@
     <h2>Customer's Favorites</h2>
     <div class="row mt-4">
       <div *ngFor="let product of customerFavorites" class="col-md-6 col-lg-3 mb-4">
-        <div class="product-card shadow-sm p-3 text-center">
-          <img [src]="product.productImageUrl" alt="{{ product.productName }}" class="img-fluid mb-3" />
-          <h5>{{ product.productName }}</h5>
-          <p>${{ product.productPrice }}</p>
-          <a [routerLink]="'/product/' + product.productId" class="btn btn-outline-primary btn-sm">View Details</a>
-        </div>
+        <app-product-details [productDetail]="product"></app-product-details>
       </div>
     </div>
   </section>

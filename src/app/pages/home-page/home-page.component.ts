@@ -4,6 +4,7 @@ import { ECommerceService } from '../../services/ecommerce.service';
 import { IGetAllProductsResponse } from '../../models/IGetAllProductsResponse';
 import { IProductDetailsResponse } from '../../models/IProductDetailsResponse';
 import { RouterModule } from '@angular/router';
+import { ProductDetailsComponent } from '../../components/product-details/product-details.component';
 
 /**
  * HomePageComponent
@@ -11,7 +12,7 @@ import { RouterModule } from '@angular/router';
 @Component({
   selector: 'app-home-page',
   standalone: true,
-  imports: [CommonModule, RouterModule],
+  imports: [CommonModule, RouterModule, ProductDetailsComponent],
   templateUrl: './home-page.component.html',
   styleUrl: './home-page.component.css',
 })
