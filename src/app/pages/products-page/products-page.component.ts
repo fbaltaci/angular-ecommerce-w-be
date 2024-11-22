@@ -4,6 +4,7 @@ import { IGetAllProductsResponse } from '../../models/IGetAllProductsResponse';
 import { ECommerceService } from '../../services/ecommerce.service';
 import { IProductDetailsResponse } from '../../models/IProductDetailsResponse';
 import { ProductDetailsComponent } from '../../components/product-details/product-details.component';
+import { CONSTANTS } from '../../constants/constants';
 
 /**
  * ProductsPageComponent
@@ -16,14 +17,10 @@ import { ProductDetailsComponent } from '../../components/product-details/produc
   styleUrl: './products-page.component.css',
 })
 export class ProductsPageComponent {
-  /**
-   * getAllProductsResponse
-   */
-  getAllProductsResponse: IGetAllProductsResponse = {
-    message: '',
-    result: '',
-    data: [] as IProductDetailsResponse[],
-  };
+  categories = CONSTANTS.CATEGORIES;
+  productsListAll: IProductDetailsResponse[] = [];
+  productsList: IProductDetailsResponse[] = [];
+  activeCategoryId: string | null = null;
 
   /**
    * Constructor
@@ -60,8 +57,25 @@ export class ProductsPageComponent {
    */
   getAllProductsFromService(): void {
     this._basketService.getAllProducts().subscribe((response) => {
-      this.getAllProductsResponse = response;
+      this.productsListAll = response.data;
+      this.productsList = this.productsListAll;
     });
-    console.log('this.getAllProductsResponse: ', this.getAllProductsResponse);
+  }
+
+  /**
+   * Toggle category filter
+   *
+   * @param categoryName { string }
+   */
+  toggleCategoryFilter(categoryName: string): void {
+    if (this.activeCategoryId === categoryName) {
+      this.activeCategoryId = null;
+      this.productsList = [...this.productsListAll];
+    } else {
+      this.activeCategoryId = categoryName;
+      this.productsList = this.productsListAll.filter(
+        (product) => product.categoryName === categoryName
+      );
+    }
   }
 }

@@ -1,21 +1,15 @@
 <div class="page">
+    <!-- Category List -->
     <div class="text-center mt-4">
-        <button class="btn btn-primary btn-sm mx-1">Fruits & Vegetables</button>
-        <button class="btn btn-primary btn-sm mx-1">Foodgrains</button>
-        <button class="btn btn-primary btn-sm mx-1">Bakery</button>
-        <button class="btn btn-primary btn-sm mx-1">Beverages</button>
-        <button class="btn btn-primary btn-sm mx-1">Snacks</button>
-        <button class="btn btn-primary btn-sm mx-1">Soft Drinks</button>
-        <button class="btn btn-primary btn-sm mx-1">Fragrances</button>
-        <button class="btn btn-primary btn-sm mx-1">T-shirts</button>
-        <button class="btn btn-primary btn-sm mx-1">Technology</button>
-        <button class="btn btn-primary btn-sm mx-1">String</button>
+        <button *ngFor="let category of categories" class="btn btn-primary btn-sm mx-1"
+            (click)="toggleCategoryFilter(category.name)">
+            {{ category.name }}
+        </button>
     </div>
 
     <!-- Products List -->
-
-    <div class="row mt-4" *ngIf="getAllProductsResponse.data.length > 0; else loading">
-        <div class="col-md-3 mb-4" *ngFor="let productDetails of getAllProductsResponse.data">
+    <div class="row mt-4" *ngIf="productsList.length > 0; else loading">
+        <div class="col-md-3 mb-4" *ngFor="let productDetails of productsList">
             <app-product-details [productDetail]="productDetails"></app-product-details>
         </div>
     </div>
