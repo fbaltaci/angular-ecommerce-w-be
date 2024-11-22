@@ -1,7 +1,10 @@
 <div class="page">
     <!-- Category List -->
     <div class="text-center mt-4">
+        <button [ngClass]="{'btn-active': activeCategoryName === 'all'}" class="btn btn-primary btn-sm mx-1"
+            (click)="toggleCategoryFilter('all')">All</button>
         <button *ngFor="let category of categories" class="btn btn-primary btn-sm mx-1"
+            [ngClass]="{'btn-active': activeCategoryName === category.name}"
             (click)="toggleCategoryFilter(category.name)">
             {{ category.name }}
         </button>

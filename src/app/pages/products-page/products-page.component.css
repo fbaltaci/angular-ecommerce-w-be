@@ -28,3 +28,13 @@
 .text-warning i {
   font-size: 1rem;
 }
+
+.btn-active {
+  color: #fff;
+  background-color: #023e97;
+  border-color: #023e97;
+}
+
+.btn:hover {
+  transform: scale(1.05);
+}

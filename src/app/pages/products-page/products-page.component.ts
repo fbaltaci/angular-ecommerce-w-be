@@ -20,7 +20,7 @@ export class ProductsPageComponent {
   categories = CONSTANTS.CATEGORIES;
   productsListAll: IProductDetailsResponse[] = [];
   productsList: IProductDetailsResponse[] = [];
-  activeCategoryId: string | null = null;
+  activeCategoryName: string = 'all';
 
   /**
    * Constructor
@@ -68,11 +68,11 @@ export class ProductsPageComponent {
    * @param categoryName { string }
    */
   toggleCategoryFilter(categoryName: string): void {
-    if (this.activeCategoryId === categoryName) {
-      this.activeCategoryId = null;
+    if (categoryName === 'all' || this.activeCategoryName === categoryName) {
+      this.activeCategoryName = 'all';
       this.productsList = [...this.productsListAll];
     } else {
-      this.activeCategoryId = categoryName;
+      this.activeCategoryName = categoryName;
       this.productsList = this.productsListAll.filter(
         (product) => product.categoryName === categoryName
       );
