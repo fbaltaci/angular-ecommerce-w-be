@@ -1,33 +1,38 @@
+<!-- Top Nav -->
 <app-top-nav></app-top-nav>
 
-<nav class="navbar navbar-expand-lg navbar-light bg-success">
-    <a class="navbar-brand text-white" [routerLink]="['/']">FB - ECommerce</a>
-    <ul class="navbar-nav ml-auto">
-        <li class="nav-item">
-            <button class="nav-link btn btn-link text-white" [routerLink]="['/']">Home</button>
-        </li>
-        <li class="nav-item">
-            <button class="nav-link btn btn-link text-white" [routerLink]="['/products']">Products</button>
-        </li>
-        <li class="nav-item">
-            <button class="nav-link btn btn-link text-white" [routerLink]="['/about-us']">About Us</button>
-        </li>
-
-        <li class="nav-item position-relative" (mouseenter)="showCartPreview = true"
-            (mouseleave)="showCartPreview = false">
-            <button class="nav-link btn btn-link text-white" [routerLink]="['/cart']">
-                <i class="fas fa-shopping-cart"></i>
-                <span class="badge badge-pill badge-light">{{ cartItemCount }}</span>
-            </button>
-            <div class="cart-preview-dropdown" *ngIf="showCartPreview">
-                <app-cart-preview [custId]="customerId"></app-cart-preview>
-            </div>
-        </li>
-
-        <li class="nav-item">
-            <button class="nav-link btn btn-link text-white" [routerLink]="['/profile']">
-                <i class="fas fa-user"></i>
-            </button>
-        </li>
-    </ul>
+<!-- Nav -->
+<nav class="main-nav">
+    <div class="nav-items">
+        <div class="brand-logo">
+            <a [routerLink]="['/']">FB - ECommerce</a>
+        </div>
+        <div class="nav-links">
+            <ul>
+                <li>
+                    <a [routerLink]="['/']">Home</a>
+                </li>
+                <li>
+                    <a [routerLink]="['/products']">Products</a>
+                </li>
+                <li>
+                    <a [routerLink]="['/about-us']">About Us</a>
+                </li>
+                <li class="cart-item" (mouseenter)="showCartPreview = true" (mouseleave)="showCartPreview = false">
+                    <a [routerLink]="['/cart']">
+                        <i class="fas fa-shopping-cart"></i>
+                        <span class="cart-count">{{ cartItemCount }}</span>
+                    </a>
+                    <div class="cart-preview-dropdown" *ngIf="showCartPreview">
+                        <app-cart-preview [custId]="customerId"></app-cart-preview>
+                    </div>
+                </li>
+                <li>
+                    <a [routerLink]="['/profile']">
+                        <i class="fas fa-user"></i>
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </div>
 </nav>
