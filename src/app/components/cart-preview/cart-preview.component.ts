@@ -17,7 +17,7 @@ import { CheckoutDialogComponent } from '../checkout-dialog/checkout-dialog.comp
   styleUrl: './cart-preview.component.css',
 })
 export class CartPreviewComponent implements OnInit {
-  @Input() custId!: number;
+  @Input() cartId!: number;
   cartItemsResponse: ICartItemsResponse[] = [];
   cartTotal: number = 0;
 
@@ -37,9 +37,9 @@ export class CartPreviewComponent implements OnInit {
    * ngOnInit
    */
   ngOnInit(): void {
-    if (this.custId) {
+    if (this.cartId) {
       this._ecommerceService
-        .getCartItems(this.custId)
+        .getCartItems(this.cartId)
         .subscribe((cartItemsResponse) => {
           console.log('Received cartItemsResponse:', cartItemsResponse);
           this.cartItemsResponse = Array.isArray(cartItemsResponse)

@@ -4,6 +4,7 @@ import { RouterModule } from '@angular/router';
 import { ECommerceService } from '../../services/ecommerce.service';
 import { CartPreviewComponent } from '../cart-preview/cart-preview.component';
 import { TopNavComponent } from '../top-nav/top-nav.component';
+import { CartService } from '../../services/cart.service';
 
 /**
  * Header component
@@ -17,20 +18,28 @@ import { TopNavComponent } from '../top-nav/top-nav.component';
 })
 export class HeaderComponent {
   showCartPreview: boolean = false;
-  customerId: number = 1773; // Replace with actual customer ID from your logic
+  cartId: number = 7;
   cartItemCount: number = 0;
 
   /**
    * Constructor
    *
    * @param _ecommerceService ECommerceService
+   * @param cartService CartService
    */
-  constructor(private _ecommerceService: ECommerceService) {}
+  constructor(
+    private _ecommerceService: ECommerceService,
+    private cartService: CartService
+  ) {}
 
   /**
    * ngOnInit
    */
   ngOnInit(): void {
+    this.cartService.cartItemCount.subscribe((count) => {
+      console.log('count: ', count);
+      this.cartItemCount = count;
+    });
     this.fetchCartItemsCount();
   }
 
@@ -39,9 +48,14 @@ export class HeaderComponent {
    */
   private fetchCartItemsCount(): void {
     this._ecommerceService
-      .getCartItems(this.customerId)
+      .getCartItems(this.cartId)
       .subscribe((cartResponse) => {
-        this.cartItemCount = cartResponse.data.cartItems.length;
+        const currentTotal = cartResponse.data.cartItems.reduce(
+          (sum, item) => sum + item.quantity,
+          0
+        );
+
+        this.cartService.updateCartItemCount(currentTotal);
       });
   }
 }

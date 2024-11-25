@@ -25,9 +25,9 @@ export class ProductsPageComponent {
   /**
    * Constructor
    *
-   * @param _basketService { ECommerceService }
+   * @param _ecommerceService { ECommerceService }
    */
-  constructor(private _basketService: ECommerceService) {}
+  constructor(private _ecommerceService: ECommerceService) {}
 
   /**
    * ngOnInit
@@ -42,7 +42,7 @@ export class ProductsPageComponent {
    * Calls userLogin Service
    */
   getUserLoginFromService(): void {
-    this._basketService
+    this._ecommerceService
       .userLogin({
         username: 'testuser',
         pwd: 'password123',
@@ -56,7 +56,7 @@ export class ProductsPageComponent {
    * Calls getAllProducts Service
    */
   getAllProductsFromService(): void {
-    this._basketService.getAllProducts().subscribe((response) => {
+    this._ecommerceService.getAllProducts().subscribe((response) => {
       this.productsListAll = response.data;
       this.productsList = this.productsListAll;
     });

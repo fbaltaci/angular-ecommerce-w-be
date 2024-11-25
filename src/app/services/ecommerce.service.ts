@@ -12,6 +12,7 @@ import { ICartData } from '../models/ICartData';
 import { IPostProduct } from '../models/IPostProduct';
 import { IDeleteProductResponse } from '../models/IDeleteProductResponse';
 import { IDeleteCartResponse } from '../models/IDeleteCartResponse';
+import { CartService } from './cart.service';
 
 /**
  * ECommerceService
@@ -27,8 +28,9 @@ export class ECommerceService {
    * Constructor
    *
    * @param http HttpClient
+   * @param cartService CartService
    */
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient, private cartService: CartService) {}
 
   /**
    * Calls userRegister
@@ -80,7 +82,7 @@ export class ECommerceService {
   }
 
   /**
-   * Fetches products by product ID
+   * Creates a new product in the DB - Admin only
    *
    * @param payload Payload
    * @returns Observable of products
@@ -92,13 +94,21 @@ export class ECommerceService {
       `Bearer ${this.getToken()}`
     );
 
-    return this.http.post<IGetAllProductsResponse>(endpoint, payload, {
-      headers,
-    });
+    return this.http
+      .post<IGetAllProductsResponse>(endpoint, payload, { headers })
+      .pipe(
+        tap((response: IGetAllProductsResponse) => {
+          const totalItems = response.data.reduce(
+            (sum, item) => sum + item.quantity,
+            0
+          );
+          this.cartService.updateCartItemCount(totalItems);
+        })
+      );
   }
 
   /**
-   * Updates a product
+   * Updates a product in DB - Admin only
    *
    * @param productId Product ID
    * @param payload Payload
@@ -161,7 +171,11 @@ export class ECommerceService {
       'Authorization',
       `Bearer ${this.getToken()}`
     );
-    return this.http.get<ICartItemsResponse>(endpoint, { headers });
+    return this.http.get<ICartItemsResponse>(endpoint, { headers }).pipe(
+      tap((response: ICartItemsResponse) => {
+        this.cartService.updateCartItemCount(response.data.cartItems.length);
+      })
+    );
   }
 
   /**
@@ -177,9 +191,22 @@ export class ECommerceService {
       `Bearer ${this.getToken()}`
     );
 
-    return this.http.post<IPostCartItemsResponse>(endpoint, payload, {
-      headers,
-    });
+    return this.http
+      .post<IPostCartItemsResponse>(endpoint, payload, { headers })
+      .pipe(
+        tap((response: IPostCartItemsResponse) => {
+          const addedItemsCount = response.data[0].cartItems.reduce(
+            (sum, item) => sum + item.quantity,
+            0
+          );
+
+          // Get the current cart count
+          const currentCount = this.cartService.cartItemCountSubject.getValue();
+
+          // Increment the count instead of overriding it
+          this.cartService.updateCartItemCount(currentCount + addedItemsCount);
+        })
+      );
   }
 
   /**
@@ -222,14 +249,14 @@ export class ECommerceService {
    * Retrieves the token from local storage
    * @returns The stored token or null
    */
-  getToken(): string | null {
+  private getToken(): string | null {
     return localStorage.getItem(this.tokenKey);
   }
 
   /**
    * Clears the token from local storage (for logout)
    */
-  clearToken(): void {
+  private clearToken(): void {
     localStorage.removeItem(this.tokenKey);
   }
 
