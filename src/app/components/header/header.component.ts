@@ -5,6 +5,7 @@ import { ECommerceService } from '../../services/ecommerce.service';
 import { CartPreviewComponent } from '../cart-preview/cart-preview.component';
 import { TopNavComponent } from '../top-nav/top-nav.component';
 import { CartService } from '../../services/cart.service';
+import { ProfilePreviewComponent } from '../profile-preview/profile-preview.component';
 
 /**
  * Header component
@@ -12,12 +13,19 @@ import { CartService } from '../../services/cart.service';
 @Component({
   selector: 'app-header',
   standalone: true,
-  imports: [CommonModule, RouterModule, CartPreviewComponent, TopNavComponent],
+  imports: [
+    CommonModule,
+    RouterModule,
+    CartPreviewComponent,
+    TopNavComponent,
+    ProfilePreviewComponent,
+  ],
   templateUrl: './header.component.html',
   styleUrls: ['./header.component.css'],
 })
 export class HeaderComponent {
   showCartPreview: boolean = false;
+  showProfilePreview: boolean = false;
   cartId: number = 7;
   cartItemCount: number = 0;
 

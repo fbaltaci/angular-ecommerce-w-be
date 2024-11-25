@@ -27,10 +27,14 @@
                         <app-cart-preview [cartId]="cartId"></app-cart-preview>
                     </div>
                 </li>
-                <li>
+                <li class="profile-item" (mouseenter)="showProfilePreview = true"
+                    (mouseleave)="showProfilePreview = false">
                     <a [routerLink]="['/profile']">
                         <i class="fas fa-user"></i>
                     </a>
+                    <div class="profile-preview-dropdown" *ngIf="showProfilePreview">
+                        <app-profile-preview></app-profile-preview>
+                    </div>
                 </li>
             </ul>
         </div>
