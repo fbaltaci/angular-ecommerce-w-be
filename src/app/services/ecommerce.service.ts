@@ -33,12 +33,12 @@ export class ECommerceService {
   constructor(private http: HttpClient, private cartService: CartService) {}
 
   /**
-   * Calls userRegister
+   * Calls registerUser
    *
    * @param payload Payload for userRegister
    * @returns Observable<IUserRegisterResponse>
    */
-  userRegister(
+  registerUser(
     payload: IUserRegisterPayload
   ): Observable<IUserRegisterResponse> {
     const endpoint = `${this.baseURL}/auth/register`;
@@ -46,12 +46,12 @@ export class ECommerceService {
   }
 
   /**
-   * Calls userLogin
+   * Calls loginUser
    *
    * @param payload Payload for userLogin
    * @returns Observable<IUserLoginResponse>
    */
-  userLogin(payload: IUserLoginPayload): Observable<IUserLoginResponse> {
+  loginUser(payload: IUserLoginPayload): Observable<IUserLoginResponse> {
     const endpoint = `${this.baseURL}/auth/login`;
     return this.http.post<IUserLoginResponse>(endpoint, payload).pipe(
       tap((response: IUserLoginResponse) => {

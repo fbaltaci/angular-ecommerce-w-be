@@ -43,7 +43,7 @@ export class ProductsPageComponent {
    */
   getUserLoginFromService(): void {
     this._ecommerceService
-      .userLogin({
+      .loginUser({
         username: 'testuser',
         pwd: 'password123',
       })

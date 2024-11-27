@@ -3,6 +3,7 @@ import { Component } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 import { RegisterDialogComponent } from '../register-dialog/register-dialog.component';
+import { LoginDialogComponent } from '../login-dialog/login-dialog.component';
 
 /**
  * ProfilePreviewComponent
@@ -25,6 +26,15 @@ export class ProfilePreviewComponent {
    */
   onRegisterClick(): void {
     const dialogRef = this.dialog.open(RegisterDialogComponent, {
+      width: '500px',
+    });
+  }
+
+  /**
+   * On login click
+   */
+  onLoginClick(): void {
+    const dialogRef = this.dialog.open(LoginDialogComponent, {
       width: '500px',
     });
   }

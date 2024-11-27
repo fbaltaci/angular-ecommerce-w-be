@@ -10,7 +10,12 @@ import { CommonModule } from '@angular/common';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
+import { ECommerceService } from '../../services/ecommerce.service';
+import { IUserRegisterPayload } from '../../models/IUserRegisterPayload';
 
+/**
+ * RegisterDialogComponent
+ */
 @Component({
   selector: 'app-register-dialog',
   standalone: true,
@@ -25,6 +30,7 @@ import { MatButtonModule } from '@angular/material/button';
   styleUrls: ['./register-dialog.component.css'],
 })
 export class RegisterDialogComponent {
+  isUserRegistered: boolean = false;
   registerForm: FormGroup;
 
   /**
@@ -32,10 +38,12 @@ export class RegisterDialogComponent {
    *
    * @param fb FormBuilder
    * @param dialogRef DialogRef
+   * @param _ecommerceService ECommerceService
    */
   constructor(
     private fb: FormBuilder,
-    private dialogRef: MatDialogRef<RegisterDialogComponent>
+    private dialogRef: MatDialogRef<RegisterDialogComponent>,
+    private _ecommerceService: ECommerceService
   ) {
     this.registerForm = this.fb.group({
       username: ['', [Validators.required, Validators.minLength(3)]],
@@ -56,6 +64,16 @@ export class RegisterDialogComponent {
    */
   submit(): void {
     if (this.registerForm.valid) {
+      const payload: IUserRegisterPayload = {
+        username: this.registerForm.value.username,
+        password: this.registerForm.value.password,
+        role: 'user',
+      };
+      this._ecommerceService.registerUser(payload).subscribe((response) => {
+        console.log(response);
+      });
+      this.isUserRegistered = true;
+
       this.dialogRef.close(this.registerForm.value);
     }
   }
