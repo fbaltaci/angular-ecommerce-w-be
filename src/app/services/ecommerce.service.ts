@@ -179,6 +179,22 @@ export class ECommerceService {
   }
 
   /**
+   * Calls getLastCart
+   *
+   * @param customerId Customer ID
+   * @returns Observable<ICartItemsResponse>
+   */
+  getLastCart(customerId: number, token: string): Observable<ICartItemsResponse> {
+    const endpoint = `${this.baseURL}/ecommerce/cart/last/${customerId}`;
+    const headers = new HttpHeaders().set(
+      'Authorization',
+      `Bearer ${token}`
+    );
+
+    return this.http.get<ICartItemsResponse>(endpoint, { headers });
+  }
+
+  /**
    * Adds an item to the cart
    *
    * @param custId Customer ID

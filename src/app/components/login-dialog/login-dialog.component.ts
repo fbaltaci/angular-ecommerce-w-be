@@ -33,6 +33,7 @@ import { IUserLoginPayload } from '../../models/IUserLoginPayload';
 export class LoginDialogComponent {
   isUserLoggedIn: boolean = false;
   loginForm: FormGroup;
+  customerId: number = 0;
 
   // Private Values
   private token: string = '';
@@ -69,11 +70,36 @@ export class LoginDialogComponent {
         username: this.loginForm.value.username,
         pwd: this.loginForm.value.password,
       };
-      this._ecommerceService.loginUser(payload).subscribe((response) => {
-        this.token = response.token;
+      this._ecommerceService.loginUser(payload).subscribe({
+        next: (response) => {
+          this.customerId = response.customerId;
+          this.token = response.token;
+
+          this.isUserLoggedIn = true;
+          this.getLastCartForCustomer();
+          this.dialogRef.close(this.loginForm.value);
+        },
+        error: (err) => {
+          console.error('Login failed:', err);
+        },
       });
+
+      console.log(this.customerId);
+
       this.isUserLoggedIn = true;
+      this.getLastCartForCustomer();
       this.dialogRef.close(this.loginForm.value);
     }
+  }
+
+  /**
+   * Fetches the last cart for the customer
+   */
+  private getLastCartForCustomer(): void {
+    this._ecommerceService
+      .getLastCart(this.customerId, this.token)
+      .subscribe((response) => {
+        console.log('Last cart:', response);
+      });
   }
 }

@@ -14,6 +14,7 @@ import { ICartItem } from '../../models/ICartItem';
 })
 export class ProductDetailsComponent {
   @Input() productDetail!: IProductDetailsResponse;
+  cartId: number = 7;
   custId: number = 1;
 
   /**
@@ -28,7 +29,7 @@ export class ProductDetailsComponent {
    */
   addToCart(productDetail: IProductDetailsResponse): void {
     const addToCartPayload: ICartData = {
-      cartId: 7,
+      cartId: this.cartId,
       custId: this.custId,
       cartItems: [
         {

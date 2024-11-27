@@ -35,7 +35,6 @@ export class ProductsPageComponent {
   ngOnInit(): void {
     this.getUserLoginFromService();
     this.getAllProductsFromService();
-    console.log('ngOnInit');
   }
 
   /**

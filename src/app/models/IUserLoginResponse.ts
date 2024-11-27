@@ -3,5 +3,6 @@
  */
 export interface IUserLoginResponse {
   message: string;
+  customerId: number;
   token: string;
 }
