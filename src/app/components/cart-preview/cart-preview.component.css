@@ -1,10 +1,14 @@
 .cart-preview .cart-actions {
-  margin-top: 15px;
   display: flex;
   justify-content: space-between;
-  gap: 10px;
+  gap: 5px;
 }
 
 .cart-preview .cart-actions button {
   flex: 1;
+}
+
+.cart-subtotal {
+  color: #000;
+  margin: 5px 3px;
 }

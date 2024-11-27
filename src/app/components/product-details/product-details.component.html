@@ -2,7 +2,7 @@
     <img [src]="productDetail.productImageUrl" class="card-img-top" alt="{{ productDetail.productShortName }}">
     <div class="card-body">
         <h5 class="card-title">{{ productDetail.productName }}</h5>
-        <p class="card-text text-danger">{{ productDetail.productPrice }}</p>
+        <p class="card-text text-danger">${{ productDetail.productPrice }}</p>
         <div>
             <span class="text-muted">({{ productDetail.categoryName }})</span>
         </div>

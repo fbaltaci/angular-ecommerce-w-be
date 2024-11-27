@@ -60,7 +60,6 @@ export class CartPreviewComponent implements OnInit {
 
     dialogRef.afterClosed().subscribe((result) => {
       if (result) {
-        // Navigate to the checkout page
         this.router.navigate(['/checkout']);
       }
     });
