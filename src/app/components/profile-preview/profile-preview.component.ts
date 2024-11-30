@@ -25,7 +25,7 @@ export class ProfilePreviewComponent {
    * On register click
    */
   onRegisterClick(): void {
-    const dialogRef = this.dialog.open(RegisterDialogComponent, {
+    this.dialog.open(RegisterDialogComponent, {
       width: '500px',
     });
   }
@@ -34,7 +34,7 @@ export class ProfilePreviewComponent {
    * On login click
    */
   onLoginClick(): void {
-    const dialogRef = this.dialog.open(LoginDialogComponent, {
+    this.dialog.open(LoginDialogComponent, {
       width: '500px',
     });
   }

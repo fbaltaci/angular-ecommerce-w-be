@@ -69,9 +69,14 @@ export class RegisterDialogComponent {
         password: this.registerForm.value.password,
         role: 'user',
       };
+
       this._ecommerceService.registerUser(payload).subscribe((response) => {
-        console.log(response);
+        localStorage.setItem('customerId', response.customerId.toString()); // Store the customerId in localStorage
+        localStorage.setItem('token', response.token); // Store the token in localStorage
+      }, (error) => {
+        console.error('Error registering user:', error);
       });
+
       this.isUserRegistered = true;
 
       this.dialogRef.close(this.registerForm.value);

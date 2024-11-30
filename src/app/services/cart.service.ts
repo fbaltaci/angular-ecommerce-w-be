@@ -1,6 +1,5 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
-import { ICartData } from '../models/ICartData';
 
 /**
  * CartService to interact with other components.

@@ -5,6 +5,7 @@ import { ECommerceService } from '../../services/ecommerce.service';
 import { Router, RouterModule } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 import { CheckoutDialogComponent } from '../checkout-dialog/checkout-dialog.component';
+import { MessageService } from '../../services/message.service';
 
 /**
  * CartPreviewComponent

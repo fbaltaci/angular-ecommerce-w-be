@@ -13,6 +13,7 @@ import {
 import { MatDialogRef } from '@angular/material/dialog';
 import { CommonModule } from '@angular/common';
 import { IUserLoginPayload } from '../../models/IUserLoginPayload';
+import { MessageService } from '../../services/message.service';
 
 /**
  * LoginDialogComponent
@@ -33,9 +34,9 @@ import { IUserLoginPayload } from '../../models/IUserLoginPayload';
 export class LoginDialogComponent {
   isUserLoggedIn: boolean = false;
   loginForm: FormGroup;
-  customerId: number = 0;
 
   // Private Values
+  private customerId: number = 0;
   private token: string = '';
 
   /**
@@ -45,6 +46,7 @@ export class LoginDialogComponent {
     private dialog: MatDialog,
     private dialogRef: MatDialogRef<LoginDialogComponent>,
     private _ecommerceService: ECommerceService,
+    private messageService: MessageService,
     private fb: FormBuilder
   ) {
     this.loginForm = this.fb.group({
@@ -74,21 +76,24 @@ export class LoginDialogComponent {
         next: (response) => {
           this.customerId = response.customerId;
           this.token = response.token;
+          localStorage.setItem('customerId', this.customerId.toString()); // Store the customerId in localStorage
+          localStorage.setItem('token', this.token); // Store the token in localStorage
 
           this.isUserLoggedIn = true;
-          this.getLastCartForCustomer();
           this.dialogRef.close(this.loginForm.value);
+
+          // this.snackBar.open('Login is successful.', 'Close', { duration: 3000 });
+          this.messageService.showMessage('Login is successful.', 3000);
+          this.getLastCartForCustomer();
         },
         error: (err) => {
           console.error('Login failed:', err);
+          this.messageService.showMessage(
+            'Login failed. Please check your credentials.',
+            3000
+          );
         },
       });
-
-      console.log(this.customerId);
-
-      this.isUserLoggedIn = true;
-      this.getLastCartForCustomer();
-      this.dialogRef.close(this.loginForm.value);
     }
   }
 

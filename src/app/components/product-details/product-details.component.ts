@@ -4,6 +4,7 @@ import { CommonModule } from '@angular/common';
 import { ECommerceService } from '../../services/ecommerce.service';
 import { ICartData } from '../../models/ICartData';
 import { ICartItem } from '../../models/ICartItem';
+import { MessageService } from '../../services/message.service';
 
 @Component({
   selector: 'app-product-details',
@@ -21,8 +22,12 @@ export class ProductDetailsComponent {
    * Constructor
    *
    * @param _ecommerceService ECommerceService
+   * @param messageService MessageService
    */
-  constructor(private readonly _ecommerceService: ECommerceService) {}
+  constructor(
+    private readonly _ecommerceService: ECommerceService,
+    private readonly messageService: MessageService
+  ) {}
 
   /**
    * Add product to cart
@@ -47,10 +52,10 @@ export class ProductDetailsComponent {
 
     this._ecommerceService.postCartItems(addToCartPayload).subscribe({
       next: (response) => {
-        console.log('Response:', response);
+        this.messageService.showMessage('Added to cart', 2000);
       },
       error: (err) => {
-        console.error('Error adding to cart:', err);
+        this.messageService.showMessage(`Error adding to cart: ${err}`, 2000);
       },
     });
   }
