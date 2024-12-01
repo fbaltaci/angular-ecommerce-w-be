@@ -21,8 +21,8 @@ import { CartService } from './cart.service';
   providedIn: 'root',
 })
 export class ECommerceService {
+  // Privates
   private readonly baseURL: string = 'http://localhost:3000/api';
-  private readonly tokenKey: string = 'authToken';
 
   /**
    * Constructor
@@ -266,14 +266,14 @@ export class ECommerceService {
    * @returns The stored token or null
    */
   private getToken(): string | null {
-    return localStorage.getItem(this.tokenKey);
+    return localStorage.getItem('token');
   }
 
   /**
    * Clears the token from local storage (for logout)
    */
   private clearToken(): void {
-    localStorage.removeItem(this.tokenKey);
+    localStorage.removeItem('token');
   }
 
   /**
@@ -281,6 +281,6 @@ export class ECommerceService {
    * @param token Authentication token
    */
   private storeToken(token: string): void {
-    localStorage.setItem(this.tokenKey, token);
+    localStorage.setItem('token', token);
   }
 }

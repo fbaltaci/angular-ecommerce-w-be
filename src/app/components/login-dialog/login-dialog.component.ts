@@ -73,6 +73,7 @@ export class LoginDialogComponent {
         username: this.loginForm.value.username,
         pwd: this.loginForm.value.password,
       };
+
       this._ecommerceService.loginUser(payload).subscribe({
         next: (response) => {
           this.customerId = response.customerId;

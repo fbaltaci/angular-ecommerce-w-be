@@ -1,9 +1,13 @@
 .profile-preview .profile-actions {
-    display: flex;
-    justify-content: space-between;
-    gap: 5px;
-  }
-  
-  .profile-preview .profile-actions button {
-    flex: 1;
-  }
+  display: flex;
+  justify-content: space-between;
+  gap: 5px;
+}
+
+.profile-preview .profile-actions button {
+  flex: 1;
+}
+
+.profile-info {
+  color: #000;
+}

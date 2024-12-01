@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { MatDialogRef } from '@angular/material/dialog';
+import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import {
   FormBuilder,
   FormGroup,
@@ -12,6 +12,8 @@ import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { ECommerceService } from '../../services/ecommerce.service';
 import { IUserRegisterPayload } from '../../models/IUserRegisterPayload';
+import { MessageService } from '../../services/message.service';
+import { LoginDialogComponent } from '../login-dialog/login-dialog.component';
 
 /**
  * RegisterDialogComponent
@@ -42,8 +44,10 @@ export class RegisterDialogComponent {
    */
   constructor(
     private fb: FormBuilder,
+    private dialog: MatDialog,
     private dialogRef: MatDialogRef<RegisterDialogComponent>,
-    private _ecommerceService: ECommerceService
+    private _ecommerceService: ECommerceService,
+    private messageService: MessageService
   ) {
     this.registerForm = this.fb.group({
       username: ['', [Validators.required, Validators.minLength(3)]],
@@ -70,16 +74,26 @@ export class RegisterDialogComponent {
         role: 'user',
       };
 
-      this._ecommerceService.registerUser(payload).subscribe((response) => {
-        localStorage.setItem('customerId', response.customerId.toString()); // Store the customerId in localStorage
-        localStorage.setItem('token', response.token); // Store the token in localStorage
-      }, (error) => {
-        console.error('Error registering user:', error);
+      this._ecommerceService.registerUser(payload).subscribe({
+        next: (response) => {
+          this.isUserRegistered = true;
+
+          localStorage.setItem('customerId', response.customerId.toString());
+          localStorage.setItem('cartId', '1');
+
+          this.messageService.showMessage('Registration is successful, now you have to login with your credentials.', 2000);
+          this.dialogRef.close(this.registerForm.value);
+
+          this.dialog.open(LoginDialogComponent, {
+            width: '500px',
+          });
+        },
+        error: () => {
+          this.messageService.showMessage('Registration failed', 2000);
+        },
       });
-
-      this.isUserRegistered = true;
-
-      this.dialogRef.close(this.registerForm.value);
+    } else {
+      this.messageService.showMessage('Please fill out the form correctly.', 2000);
     }
   }
 }

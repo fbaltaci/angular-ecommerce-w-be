@@ -1,0 +1,9 @@
+.sign-out-dialog {
+  padding: 25px;
+}
+
+.dialog-actions {
+  display: flex;
+  justify-content: flex-start;
+  gap: 5px;
+}
