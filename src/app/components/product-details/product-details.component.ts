@@ -1,11 +1,15 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { IProductDetailsResponse } from '../../models/IProductDetailsResponse';
 import { CommonModule } from '@angular/common';
 import { ECommerceService } from '../../services/ecommerce.service';
 import { ICartData } from '../../models/ICartData';
 import { ICartItem } from '../../models/ICartItem';
 import { MessageService } from '../../services/message.service';
+import { UserService } from '../../services/user.service';
 
+/**
+ * Product Details Component
+ */
 @Component({
   selector: 'app-product-details',
   standalone: true,
@@ -13,10 +17,9 @@ import { MessageService } from '../../services/message.service';
   templateUrl: './product-details.component.html',
   styleUrl: './product-details.component.css',
 })
-export class ProductDetailsComponent {
+export class ProductDetailsComponent implements OnInit {
   @Input() productDetail!: IProductDetailsResponse;
-  cartId: number = 7;
-  custId: number = 1;
+  isUserLoggedIn: boolean = false;
 
   /**
    * Constructor
@@ -26,16 +29,29 @@ export class ProductDetailsComponent {
    */
   constructor(
     private readonly _ecommerceService: ECommerceService,
+    private readonly userService: UserService,
     private readonly messageService: MessageService
   ) {}
+
+  /**
+   * ngOnInit
+   */
+  ngOnInit(): void {
+    this.userService.userLoggedIn$.subscribe((isLoggedIn) => {
+      this.isUserLoggedIn = isLoggedIn;
+    });
+  }
 
   /**
    * Add product to cart
    */
   addToCart(productDetail: IProductDetailsResponse): void {
+    const isGuest = !this.userService.isUserLoggedIn;
+
     const addToCartPayload: ICartData = {
-      cartId: this.cartId,
-      custId: this.custId,
+      isGuest: isGuest,
+      cartId: this.userService.cartId,
+      custId: this.userService.customerId,
       cartItems: [
         {
           productId: productDetail.productId,
@@ -51,7 +67,7 @@ export class ProductDetailsComponent {
     };
 
     this._ecommerceService.postCartItems(addToCartPayload).subscribe({
-      next: (response) => {
+      next: () => {
         this.messageService.showMessage('Added to cart', 2000);
       },
       error: (err) => {

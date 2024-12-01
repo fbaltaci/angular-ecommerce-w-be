@@ -6,6 +6,7 @@ import { CartPreviewComponent } from '../cart-preview/cart-preview.component';
 import { TopNavComponent } from '../top-nav/top-nav.component';
 import { CartService } from '../../services/cart.service';
 import { ProfilePreviewComponent } from '../profile-preview/profile-preview.component';
+import { UserService } from '../../services/user.service';
 
 /**
  * Header component
@@ -26,9 +27,10 @@ import { ProfilePreviewComponent } from '../profile-preview/profile-preview.comp
 export class HeaderComponent {
   showCartPreview: boolean = false;
   showProfilePreview: boolean = false;
-  cartId: number = 7;
-  cartItemCount: number = 0;
 
+  cartId: number = 0;
+  cartItemCount: number = 0;
+  
   /**
    * Constructor
    *
@@ -37,8 +39,11 @@ export class HeaderComponent {
    */
   constructor(
     private _ecommerceService: ECommerceService,
-    private cartService: CartService
-  ) {}
+    private cartService: CartService,
+    private userService: UserService
+  ) {
+    this.cartId = this.userService.cartId;
+  }
 
   /**
    * ngOnInit
@@ -55,15 +60,18 @@ export class HeaderComponent {
    * Fetches cart items for the customer and calculates the total count
    */
   private fetchCartItemsCount(): void {
-    this._ecommerceService
-      .getCartItems(this.cartId)
-      .subscribe((cartResponse) => {
-        const currentTotal = cartResponse.data.cartItems.reduce(
-          (sum, item) => sum + item.quantity,
-          0
-        );
 
-        this.cartService.updateCartItemCount(currentTotal);
-      });
+    if (this.userService.isUserLoggedIn) {
+      this._ecommerceService
+        .getCartItems(this.userService.cartId)
+        .subscribe((cartResponse) => {
+          const currentTotal = cartResponse.data.cartItems.reduce(
+            (sum, item) => sum + item.quantity,
+            0
+          );
+  
+          this.cartService.updateCartItemCount(currentTotal);
+        });
+    }
   }
 }

@@ -14,6 +14,7 @@ import { MatDialogRef } from '@angular/material/dialog';
 import { CommonModule } from '@angular/common';
 import { IUserLoginPayload } from '../../models/IUserLoginPayload';
 import { MessageService } from '../../services/message.service';
+import { UserService } from '../../services/user.service';
 
 /**
  * LoginDialogComponent
@@ -47,6 +48,7 @@ export class LoginDialogComponent {
     private dialogRef: MatDialogRef<LoginDialogComponent>,
     private _ecommerceService: ECommerceService,
     private messageService: MessageService,
+    private userService: UserService,
     private fb: FormBuilder
   ) {
     this.loginForm = this.fb.group({
@@ -66,7 +68,6 @@ export class LoginDialogComponent {
    * Submit the login form
    */
   submit(): void {
-    console.log('Submit');
     if (this.loginForm.valid) {
       const payload: IUserLoginPayload = {
         username: this.loginForm.value.username,
@@ -76,18 +77,19 @@ export class LoginDialogComponent {
         next: (response) => {
           this.customerId = response.customerId;
           this.token = response.token;
-          localStorage.setItem('customerId', this.customerId.toString()); // Store the customerId in localStorage
-          localStorage.setItem('token', this.token); // Store the token in localStorage
+
+          localStorage.setItem('customerId', this.customerId.toString());
+          localStorage.setItem('token', this.token);
+
+          this.userService.updateUserLoggedInState(true);
 
           this.isUserLoggedIn = true;
           this.dialogRef.close(this.loginForm.value);
 
-          // this.snackBar.open('Login is successful.', 'Close', { duration: 3000 });
           this.messageService.showMessage('Login is successful.', 3000);
           this.getLastCartForCustomer();
         },
-        error: (err) => {
-          console.error('Login failed:', err);
+        error: () => {
           this.messageService.showMessage(
             'Login failed. Please check your credentials.',
             3000
@@ -104,7 +106,7 @@ export class LoginDialogComponent {
     this._ecommerceService
       .getLastCart(this.customerId, this.token)
       .subscribe((response) => {
-        console.log('Last cart:', response);
+        localStorage.setItem('cartId', response.cartId.toString());
       });
   }
 }
