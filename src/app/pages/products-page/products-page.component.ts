@@ -33,22 +33,7 @@ export class ProductsPageComponent {
    * ngOnInit
    */
   ngOnInit(): void {
-    this.getUserLoginFromService();
     this.getAllProductsFromService();
-  }
-
-  /**
-   * Calls userLogin Service
-   */
-  getUserLoginFromService(): void {
-    this._ecommerceService
-      .loginUser({
-        username: 'testuser',
-        pwd: 'password123',
-      })
-      .subscribe((response) => {
-        console.log(response);
-      });
   }
 
   /**
