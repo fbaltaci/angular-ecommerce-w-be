@@ -6,6 +6,7 @@ import { ICartData } from '../../models/ICartData';
 import { ICartItem } from '../../models/ICartItem';
 import { MessageService } from '../../services/message.service';
 import { UserService } from '../../services/user.service';
+import { CartService } from '../../services/cart.service';
 
 /**
  * Product Details Component
@@ -29,6 +30,7 @@ export class ProductDetailsComponent implements OnInit {
    */
   constructor(
     private readonly _ecommerceService: ECommerceService,
+    private readonly cartService: CartService,
     private readonly userService: UserService,
     private readonly messageService: MessageService
   ) {}
@@ -91,7 +93,7 @@ export class ProductDetailsComponent implements OnInit {
       existingCart.push(payload.cartItems[0]);
     }
 
-    localStorage.setItem('guestCart', JSON.stringify(existingCart));
+    this.cartService.addToCart(payload.cartItems);
     this.messageService.showMessage('Item added to cart', 2000);
   }
 

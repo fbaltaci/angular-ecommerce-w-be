@@ -31,9 +31,11 @@ export class CartService {
    *
    * @param cartItem - The item to add.
    */
-  addToCart(items: ICartItem[]): void {
+  addToCart(items: ICartItem[] | ICartItem): void {
     const currentCart = this.getCartFromLocalStorage();
-    items.forEach((item) => {
+    const itemsToAdd = Array.isArray(items) ? items : [items];
+  
+    itemsToAdd.forEach((item) => {
       const existingItemIndex = currentCart.findIndex(
         (cartItem) => cartItem.productId === item.productId
       );
@@ -45,7 +47,7 @@ export class CartService {
     });
   
     this.updateCartInLocalStorage(currentCart);
-  }  
+  }
 
   /**
    * Remove an item from the cart.
