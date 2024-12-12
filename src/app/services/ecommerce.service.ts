@@ -102,7 +102,6 @@ export class ECommerceService {
             (sum, item) => sum + item.quantity,
             0
           );
-          this.cartService.updateCartItemCount(totalItems);
         })
       );
   }
@@ -173,7 +172,7 @@ export class ECommerceService {
     );
     return this.http.get<ICartItemsResponse>(endpoint, { headers }).pipe(
       tap((response: ICartItemsResponse) => {
-        this.cartService.updateCartItemCount(response.data.cartItems.length);
+        // 
       })
     );
   }
@@ -217,10 +216,10 @@ export class ECommerceService {
           );
 
           // Get the current cart count
-          const currentCount = this.cartService.cartItemCountSubject.getValue();
+          // const currentCount = this.cartService.cartItemCountSubject.getValue();
 
           // Increment the count instead of overriding it
-          this.cartService.updateCartItemCount(currentCount + addedItemsCount);
+          // this.cartService.updateCartItemCount(currentCount + addedItemsCount);
         })
       );
   }

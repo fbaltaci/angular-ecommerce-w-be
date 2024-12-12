@@ -18,8 +18,8 @@ export class CartService {
     this.calculateCartItemCount()
   );
 
-  cartItems$: Observable<ICartItem[]> = this.cartItemsSubject.asObservable();
-  cartItemCount$: Observable<number> = this.cartItemCountSubject.asObservable();
+  cartItems: Observable<ICartItem[]> = this.cartItemsSubject.asObservable();
+  cartItemCount: Observable<number> = this.cartItemCountSubject.asObservable();
 
   /**
    * Constructor
@@ -31,20 +31,21 @@ export class CartService {
    *
    * @param cartItem - The item to add.
    */
-  addToCart(cartItem: ICartItem): void {
+  addToCart(items: ICartItem[]): void {
     const currentCart = this.getCartFromLocalStorage();
-    const existingItemIndex = currentCart.findIndex(
-      (item) => item.productId === cartItem.productId
-    );
-
-    if (existingItemIndex !== -1) {
-      currentCart[existingItemIndex].quantity += cartItem.quantity;
-    } else {
-      currentCart.push(cartItem);
-    }
-
+    items.forEach((item) => {
+      const existingItemIndex = currentCart.findIndex(
+        (cartItem) => cartItem.productId === item.productId
+      );
+      if (existingItemIndex !== -1) {
+        currentCart[existingItemIndex].quantity += item.quantity;
+      } else {
+        currentCart.push(item);
+      }
+    });
+  
     this.updateCartInLocalStorage(currentCart);
-  }
+  }  
 
   /**
    * Remove an item from the cart.

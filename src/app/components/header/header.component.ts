@@ -50,7 +50,7 @@ export class HeaderComponent {
    */
   ngOnInit(): void {
     this.cartService.cartItemCount.subscribe((count) => {
-      console.log('count: ', count);
+      console.log('Cart item count updated: ', count);
       this.cartItemCount = count;
     });
     this.fetchCartItemsCount();
@@ -60,7 +60,6 @@ export class HeaderComponent {
    * Fetches cart items for the customer and calculates the total count
    */
   private fetchCartItemsCount(): void {
-
     if (this.userService.isUserLoggedIn) {
       this._ecommerceService
         .getCartItems(this.userService.cartId)
@@ -69,8 +68,9 @@ export class HeaderComponent {
             (sum, item) => sum + item.quantity,
             0
           );
-  
-          this.cartService.updateCartItemCount(currentTotal);
+
+          // Update the cart in CartService by setting the new cart
+          this.cartService.addToCart(cartResponse.data.cartItems);
         });
     }
   }
