@@ -19,7 +19,11 @@ import { CartService } from '../../services/cart.service';
 export class CartPageComponent implements OnInit {
   cartItem!: ICartItem[];
   cartItemsResponse: ICartItemsResponse[] = [];
-  cartTotal = 0;
+
+  isUserLoggedIn: boolean = false;
+  customerId: number = 0;
+  cartId: number = 0;
+  cartTotal: number = 0;
 
   /**
    * Constructor
@@ -30,12 +34,18 @@ export class CartPageComponent implements OnInit {
   constructor(
     private _ecommerceService: ECommerceService,
     private userService: UserService
-  ) {}
+  ) {
+    this.cartId = this.userService.cartId;
+  }
 
   /**
    * ngOnInit
    */
-  ngOnInit(): void {
+  ngOnInit(): void {    
+    this.userService.userLoggedIn$.subscribe((isLoggedIn) => {
+      this.isUserLoggedIn = isLoggedIn;
+      this.customerId = isLoggedIn ? this.userService.customerId : 0;
+    });
     this.fetchCartItems();
   }
 
@@ -43,9 +53,9 @@ export class CartPageComponent implements OnInit {
    * Fetches cart items for the customer and calculates total
    */
   private fetchCartItems(): void {
-    if (this.userService.customerId) {
+    if (this.isUserLoggedIn) {
       this._ecommerceService
-        .getCartItems(this.userService.customerId)
+        .getCartItems(this.cartId)
         .subscribe((cartItemsResponse) => {
           this.cartItem = cartItemsResponse.data.cartItems;
           this.cartItemsResponse = Array.isArray(cartItemsResponse)

@@ -24,5 +24,6 @@
     <!-- Empty Cart Message -->
     <ng-template #emptyCart>
         <p>Your cart is empty.</p>
+        <p *ngIf="!isUserLoggedIn">Please log in to see your cart.</p>
     </ng-template>
 </div>

@@ -44,7 +44,6 @@ export class LoginDialogComponent {
    * Constructor
    */
   constructor(
-    private dialog: MatDialog,
     private dialogRef: MatDialogRef<LoginDialogComponent>,
     private _ecommerceService: ECommerceService,
     private messageService: MessageService,
@@ -88,6 +87,8 @@ export class LoginDialogComponent {
           this.dialogRef.close(this.loginForm.value);
 
           this.messageService.showMessage('Login is successful.', 3000);
+          // Check if customer has any item in the localStorage cart.
+          // If so, then POST this cart as new cart for the customer.
           this.getLastCartForCustomer();
         },
         error: () => {

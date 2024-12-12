@@ -41,7 +41,6 @@ export class CartPreviewComponent implements OnInit {
       this._ecommerceService
         .getCartItems(this.cartId)
         .subscribe((cartItemsResponse) => {
-          console.log('Received cartItemsResponse:', cartItemsResponse);
           this.cartItemsResponse = Array.isArray(cartItemsResponse)
             ? cartItemsResponse
             : [cartItemsResponse];
