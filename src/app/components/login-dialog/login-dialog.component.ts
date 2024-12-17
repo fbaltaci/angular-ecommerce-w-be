@@ -15,6 +15,8 @@ import { CommonModule } from '@angular/common';
 import { IUserLoginPayload } from '../../models/IUserLoginPayload';
 import { MessageService } from '../../services/message.service';
 import { UserService } from '../../services/user.service';
+import { ICartData } from '../../models/ICartData';
+import { ICartItem } from '../../models/ICartItem';
 
 /**
  * LoginDialogComponent
@@ -87,9 +89,13 @@ export class LoginDialogComponent {
           this.dialogRef.close(this.loginForm.value);
 
           this.messageService.showMessage('Login is successful.', 3000);
-          // Check if customer has any item in the localStorage cart.
-          // If so, then POST this cart as new cart for the customer.
-          this.getLastCartForCustomer();
+
+          const guestCart: ICartItem[] = JSON.parse(localStorage.getItem('guestCart') || '[]');
+          if (guestCart) {
+            this.postGuestCartForCustomer(guestCart);
+          } else {
+            this.getLastCartForCustomer();
+          }
         },
         error: () => {
           this.messageService.showMessage(
@@ -110,5 +116,29 @@ export class LoginDialogComponent {
       .subscribe((response) => {
         localStorage.setItem('cartId', response.cartId.toString());
       });
+  }
+
+  /**
+   * Post guest cart as new cart for the logged in customer
+   */
+  private postGuestCartForCustomer(localStorageGuestCart: ICartItem[]): void {
+    console.log('localStorageGuestCart: ', localStorageGuestCart);
+    const payload: ICartData = {
+      isGuest: false,
+      cartId: 1,
+      custId: this.customerId,
+      cartItems: localStorageGuestCart
+    };
+
+    this._ecommerceService.postCartItems(payload).subscribe({
+      next: () => {
+        this.messageService.showMessage('Cart successfully transferred!', 3000);
+        localStorage.removeItem('guestCart');
+      },
+      error: (error) => {
+        console.error('Error posting guest cart:', error);
+        this.messageService.showMessage('Failed to transfer guest cart.', 3000);
+      },
+    });
   }
 }

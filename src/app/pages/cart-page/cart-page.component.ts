@@ -2,9 +2,7 @@ import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { ICartItem } from '../../models/ICartItem';
 import { ECommerceService } from '../../services/ecommerce.service';
-import { ICartItemsResponse } from '../../models/ICartItemsResponse';
 import { UserService } from '../../services/user.service';
-import { CartService } from '../../services/cart.service';
 
 /**
  * Cart Page Component

@@ -1,6 +1,6 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable, tap } from 'rxjs';
+import { catchError, Observable, tap } from 'rxjs';
 import { ICartItemsResponse } from '../models/ICartItemsResponse';
 import { IGetAllProductsResponse } from '../models/IGetAllProductsResponse';
 import { IUserLoginPayload } from '../models/IUserLoginPayload';
@@ -196,7 +196,6 @@ export class ECommerceService {
   /**
    * Adds an item to the cart
    *
-   * @param custId Customer ID
    * @param productId Product ID
    */
   postCartItems(payload: ICartData): Observable<IPostCartItemsResponse> {
@@ -214,12 +213,10 @@ export class ECommerceService {
             (sum, item) => sum + item.quantity,
             0
           );
-
-          // Get the current cart count
-          // const currentCount = this.cartService.cartItemCountSubject.getValue();
-
-          // Increment the count instead of overriding it
-          // this.cartService.updateCartItemCount(currentCount + addedItemsCount);
+        }),
+        catchError((error) => {
+          console.error('Error adding items to cart:', error);
+          throw error;
         })
       );
   }
