@@ -3,8 +3,8 @@
     <h3>Your Cart</h3>
 
     <!-- Check if cart has items -->
-    <div *ngIf="cartItem && cartItem.length > 0; else emptyCart">
-        <div class="row mt-3" *ngFor="let item of cartItem">
+    <div *ngIf="cartItems && cartItems.length > 0; else emptyCart">
+        <div class="row mt-3" *ngFor="let item of cartItems">
             <div class="col-md-2">
                 <img [src]="item.productImageUrl" class="img-fluid" alt="{{ item.productShortName }}">
             </div>
@@ -18,6 +18,11 @@
         <!-- Total Price -->
         <div class="mt-4 text-end">
             <h5>Total: ${{ cartTotal }}</h5>
+        </div>
+
+        <!-- Checkout Button -->
+        <div class="mt-4 text-end">
+            <button class="btn btn-primary" (click)="onCheckoutClick()">Checkout</button>
         </div>
     </div>
 

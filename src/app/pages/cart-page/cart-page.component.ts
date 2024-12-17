@@ -17,12 +17,8 @@ import { CartService } from '../../services/cart.service';
   styleUrls: ['./cart-page.component.css'],
 })
 export class CartPageComponent implements OnInit {
-  cartItem!: ICartItem[];
-  cartItemsResponse: ICartItemsResponse[] = [];
-
+  cartItems!: ICartItem[];
   isUserLoggedIn: boolean = false;
-  customerId: number = 0;
-  cartId: number = 0;
   cartTotal: number = 0;
 
   /**
@@ -34,48 +30,65 @@ export class CartPageComponent implements OnInit {
   constructor(
     private _ecommerceService: ECommerceService,
     private userService: UserService
-  ) {
-    this.cartId = this.userService.cartId;
-  }
+  ) {}
 
   /**
    * ngOnInit
    */
-  ngOnInit(): void {    
-    this.userService.userLoggedIn$.subscribe((isLoggedIn) => {
-      this.isUserLoggedIn = isLoggedIn;
-      this.customerId = isLoggedIn ? this.userService.customerId : 0;
-    });
-    this.fetchCartItems();
-  }
-
-  /**
-   * Fetches cart items for the customer and calculates total
-   */
-  private fetchCartItems(): void {
+  ngOnInit(): void {
+    this.isUserLoggedIn = this.userService.isUserLoggedIn;
     if (this.isUserLoggedIn) {
-      this._ecommerceService
-        .getCartItems(this.cartId)
-        .subscribe((cartItemsResponse) => {
-          this.cartItem = cartItemsResponse.data.cartItems;
-          this.cartItemsResponse = Array.isArray(cartItemsResponse)
-            ? cartItemsResponse
-            : [cartItemsResponse];
-          this.calculateCartTotal();
-        });
+      this.fetchCartItems();
+    } else {
+      this.loadGuestCart();
     }
   }
 
   /**
-   * Calculates the total price of items in the cart
+   * Checks out the cart items
+   */
+  onCheckoutClick(): void {
+    console.log('this.cartItems: ', this.cartItems);
+  }
+
+  /**
+   * Load guest cart items from localStorage and calculate total
+   */
+  private loadGuestCart(): void {
+    const storedCart = localStorage.getItem('guestCart');
+    if (storedCart) {
+      try {
+        this.cartItems = JSON.parse(storedCart) as ICartItem[];
+        this.calculateCartTotal();
+      } catch (error) {
+        console.error('Error parsing guestCart:', error);
+        this.cartItems = [];
+      }
+    }
+  }
+
+  /**
+   * Fetch cart items for the logged-in user
+   */
+  private fetchCartItems(): void {
+    this._ecommerceService.getCartItems(this.userService.cartId).subscribe({
+      next: (response) => {
+        this.cartItems = response.data.cartItems;
+        this.calculateCartTotal();
+      },
+      error: (error) => {
+        console.error('Error fetching cart items:', error);
+      },
+    });
+  }
+
+  /**
+   * Calculate the total price of items in the cart
    */
   private calculateCartTotal(): void {
-    if (!this.cartItemsResponse || !Array.isArray(this.cartItemsResponse))
-      return;
-    
-    this.cartTotal = this.cartItemsResponse.reduce((total, cart) => {
-      const cartSubtotal = cart.data.cartItems.reduce((subtotal, item) => subtotal + item.productPrice * item.quantity, 0);
-      return total + cartSubtotal;
-    }, 0);
+    this.cartTotal = this.cartItems.reduce(
+      (total, item) => total + item.productPrice * item.quantity,
+      0
+    );
   }
 }
