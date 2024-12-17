@@ -1,10 +1,11 @@
 import { CommonModule } from '@angular/common';
 import { Component, Input, OnInit } from '@angular/core';
-import { ICartItemsResponse } from '../../models/ICartItemsResponse';
 import { ECommerceService } from '../../services/ecommerce.service';
 import { Router, RouterModule } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 import { CheckoutDialogComponent } from '../checkout-dialog/checkout-dialog.component';
+import { CartService } from '../../services/cart.service';
+import { ICartItem } from '../../models/ICartItem';
 
 /**
  * CartPreviewComponent
@@ -18,17 +19,21 @@ import { CheckoutDialogComponent } from '../checkout-dialog/checkout-dialog.comp
 })
 export class CartPreviewComponent implements OnInit {
   @Input() cartId!: number;
-  cartItemsResponse: ICartItemsResponse[] = [];
   cartTotal: number = 0;
+  cartItemCount: number = 0;
+  private cartItems: ICartItem[] = [];
 
   /**
    * Constructor
    *
    * @param _ecommerceService
-   *
+   * @param cartService
+   * @param dialog
+   * @param router
    */
   constructor(
     private _ecommerceService: ECommerceService,
+    private cartService: CartService,
     private dialog: MatDialog,
     private router: Router
   ) {}
@@ -37,15 +42,16 @@ export class CartPreviewComponent implements OnInit {
    * ngOnInit
    */
   ngOnInit(): void {
+    this.cartService.cartItemCount.subscribe((count) => {
+      this.cartItemCount = count;
+      if (this.cartItemCount > 0) {
+        this.cartItems = JSON.parse(localStorage.getItem('guestCart') || '[]');
+        this.calculateCartTotal();
+      }
+    });
+
     if (this.cartId) {
-      this._ecommerceService
-        .getCartItems(this.cartId)
-        .subscribe((cartItemsResponse) => {
-          this.cartItemsResponse = Array.isArray(cartItemsResponse)
-            ? cartItemsResponse
-            : [cartItemsResponse];
-          this.calculateCartTotal();
-        });
+      this.fetchCartItems();
     }
   }
 
@@ -65,18 +71,28 @@ export class CartPreviewComponent implements OnInit {
   }
 
   /**
+   * Fetch cart items from the service
+   */
+  private fetchCartItems(): void {
+    this._ecommerceService.getCartItems(this.cartId).subscribe({
+      next: (response) => {
+        this.cartItems = response.data?.cartItems || [];
+        this.calculateCartTotal();
+      },
+      error: (err) => {
+        console.error('Error fetching cart items:', err);
+        this.cartItems = [];
+      },
+    });
+  }
+
+  /**
    * Calculates the total price of items in the cart
    */
   private calculateCartTotal(): void {
-    if (!this.cartItemsResponse || !Array.isArray(this.cartItemsResponse))
-      return;
-
-    this.cartTotal = this.cartItemsResponse.reduce((total, cart) => {
-      const cartSubtotal = cart.data.cartItems.reduce(
-        (subtotal, item) => subtotal + item.productPrice * item.quantity,
-        0
-      );
-      return total + cartSubtotal;
-    }, 0);
+    this.cartTotal = this.cartItems.reduce(
+      (total, item) => total + item.productPrice * item.quantity,
+      0
+    );
   }
 }

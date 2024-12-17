@@ -2,7 +2,12 @@
   <i class="bi bi-cart3 cart-icon"></i>
   <div class="cart-preview">
     <div class="cart-subtotal">
-      Subtotal: <span>${{ cartTotal }}</span>
+      <ng-container *ngIf="cartItemCount !== 0; else emptyCart">
+        <span>Subtotal: ${{ cartTotal }}</span>
+      </ng-container>
+      <ng-template #emptyCart>
+        <span>Your cart is empty.</span>
+      </ng-template>
     </div>
     <div class="cart-actions">
       <button class="btn btn-primary" routerLink="/cart">View Cart</button>

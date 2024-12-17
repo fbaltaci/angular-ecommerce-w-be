@@ -1,12 +1,13 @@
-<!-- Top Nav -->
+<!-- Top Navigation -->
 <app-top-nav></app-top-nav>
-
-<!-- Nav -->
+<!-- Main Navigation -->
 <nav class="main-nav">
     <div class="nav-items">
+        <!-- Brand Logo -->
         <div class="brand-logo">
             <a [routerLink]="['/']">FB - ECommerce</a>
         </div>
+        <!-- Navigation Links -->
         <div class="nav-links">
             <ul>
                 <li>
@@ -18,20 +19,24 @@
                 <li>
                     <a [routerLink]="['/about-us']">About Us</a>
                 </li>
+                <!-- Cart Section -->
                 <li class="cart-item" (mouseenter)="showCartPreview = true" (mouseleave)="showCartPreview = false">
                     <a [routerLink]="['/cart']">
                         <i class="fas fa-shopping-cart"></i>
-                        <span class="cart-count">{{ cartItemCount }}</span>
+                        <span *ngIf="cartItemCount > 0" class="cart-count">{{ cartItemCount }}</span>
                     </a>
+                    <!-- Cart Preview Dropdown -->
                     <div class="cart-preview-dropdown" *ngIf="showCartPreview">
                         <app-cart-preview [cartId]="cartId"></app-cart-preview>
                     </div>
                 </li>
+                <!-- Profile Section -->
                 <li class="profile-item" (mouseenter)="showProfilePreview = true"
                     (mouseleave)="showProfilePreview = false">
                     <a [routerLink]="['/profile']">
                         <i class="fas fa-user"></i>
                     </a>
+                    <!-- Profile Preview Dropdown -->
                     <div class="profile-preview-dropdown" *ngIf="showProfilePreview">
                         <app-profile-preview></app-profile-preview>
                     </div>
