@@ -120,6 +120,8 @@ export class LoginDialogComponent {
 
   /**
    * Post guest cart as new cart for the logged in customer
+   * 
+   * @param localStorageGuestCart Guest cart that we have in local storage 
    */
   private postGuestCartForCustomer(localStorageGuestCart: ICartItem[]): void {
     console.log('localStorageGuestCart: ', localStorageGuestCart);
