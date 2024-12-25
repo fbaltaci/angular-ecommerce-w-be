@@ -1,18 +1,19 @@
 import { Component } from '@angular/core';
 import { MatDialogRef } from '@angular/material/dialog';
 import { UserService } from '../../services/user.service';
+import { CartService } from '../../services/cart.service';
 
 /**
- * SignoutdialogComponent
+ * LogOutDialogComponent
  */
 @Component({
-  selector: 'app-signoutdialog',
+  selector: 'app-logout-dialog',
   standalone: true,
   imports: [],
-  templateUrl: './signoutdialog.component.html',
-  styleUrl: './signoutdialog.component.css',
+  templateUrl: './logout-dialog.component.html',
+  styleUrl: './logout-dialog.component.css',
 })
-export class SignoutdialogComponent {
+export class LogOutDialogComponent {
 
   /**
    * Constructor
@@ -21,8 +22,9 @@ export class SignoutdialogComponent {
    * @param userService UserService
    */
   constructor(
-    private dialogRef: MatDialogRef<SignoutdialogComponent>,
-    private userService: UserService
+    private dialogRef: MatDialogRef<LogOutDialogComponent>,
+    private userService: UserService,
+    private cartService: CartService
   ) {}
 
   /**
@@ -41,9 +43,8 @@ export class SignoutdialogComponent {
       localStorage.removeItem('customerId');
       localStorage.removeItem('cartId');
     }
-
+    this.cartService.clearCart();
     this.userService.updateUserLoggedInState(false);
-
     this.dialogRef.close(true);
   }
 }

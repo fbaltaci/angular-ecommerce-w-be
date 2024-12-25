@@ -5,7 +5,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { RegisterDialogComponent } from '../register-dialog/register-dialog.component';
 import { LoginDialogComponent } from '../login-dialog/login-dialog.component';
 import { UserService } from '../../services/user.service';
-import { SignoutdialogComponent } from '../signoutdialog/signoutdialog.component';
+import { LogOutDialogComponent } from '../signoutdialog/logout-dialog.component';
 
 /**
  * ProfilePreviewComponent
@@ -61,8 +61,8 @@ export class ProfilePreviewComponent {
   /**
    * User sign out
    */
-  onSignOut(): void {
-    this.dialog.open(SignoutdialogComponent, {
+  onLogOut(): void {
+    this.dialog.open(LogOutDialogComponent, {
       width: '500px',
     });
   }
