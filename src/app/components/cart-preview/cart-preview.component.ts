@@ -50,9 +50,9 @@ export class CartPreviewComponent implements OnInit {
       }
     });
 
-    if (this.cartId) {
-      this.fetchCartItems();
-    }
+    // if (this.cartId) {
+    //   this.fetchCartItems();
+    // }
   }
 
   /**
@@ -70,21 +70,21 @@ export class CartPreviewComponent implements OnInit {
     });
   }
 
-  /**
-   * Fetch cart items from the service
-   */
-  private fetchCartItems(): void {
-    this._ecommerceService.getCartItems(this.cartId).subscribe({
-      next: (response) => {
-        this.cartItems = response.data?.cartItems || [];
-        this.calculateCartTotal();
-      },
-      error: (err) => {
-        console.error('Error fetching cart items:', err);
-        this.cartItems = [];
-      },
-    });
-  }
+  // /**
+  //  * Fetch cart items from the service
+  //  */
+  // private fetchCartItems(): void {
+  //   this._ecommerceService.getCartItems(this.cartId).subscribe({
+  //     next: (response) => {
+  //       this.cartItems = response.data?.cartItems || [];
+  //       this.calculateCartTotal();
+  //     },
+  //     error: (err) => {
+  //       console.error('Error fetching cart items:', err);
+  //       this.cartItems = [];
+  //     },
+  //   });
+  // }
 
   /**
    * Calculates the total price of items in the cart

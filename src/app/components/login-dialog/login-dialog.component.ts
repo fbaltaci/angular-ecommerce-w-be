@@ -2,7 +2,6 @@ import { Component } from '@angular/core';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
-import { MatDialog } from '@angular/material/dialog';
 import { ECommerceService } from '../../services/ecommerce.service';
 import {
   FormBuilder,
@@ -17,6 +16,7 @@ import { MessageService } from '../../services/message.service';
 import { UserService } from '../../services/user.service';
 import { ICartData } from '../../models/ICartData';
 import { ICartItem } from '../../models/ICartItem';
+import { CartService } from '../../services/cart.service';
 
 /**
  * LoginDialogComponent
@@ -51,6 +51,7 @@ export class LoginDialogComponent {
     private _ecommerceService: ECommerceService,
     private messageService: MessageService,
     private userService: UserService,
+    private cartService: CartService,
     private fb: FormBuilder
   ) {
     this.loginForm = this.fb.group({
@@ -101,8 +102,9 @@ export class LoginDialogComponent {
             this._ecommerceService
               .getLastCart(this.customerId, this.token)
               .subscribe((response) => {
-                localStorage.setItem('cartId', response.cartId.toString());
+                localStorage.setItem('cartId', response.data.cartId.toString());
                 this.lastCartId = response.cartId;
+                this.cartService.addToCart(response.data.cartItems);
               });
           }
         },
