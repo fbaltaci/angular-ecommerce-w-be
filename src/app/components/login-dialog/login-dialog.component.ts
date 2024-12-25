@@ -41,6 +41,7 @@ export class LoginDialogComponent {
   // Private Values
   private customerId: number = 0;
   private token: string = '';
+  private lastCartId: number = 0;
 
   /**
    * Constructor
@@ -79,22 +80,30 @@ export class LoginDialogComponent {
         next: (response) => {
           this.customerId = response.customerId;
           this.token = response.token;
-
           localStorage.setItem('customerId', this.customerId.toString());
           localStorage.setItem('token', this.token);
-
           this.userService.updateUserLoggedInState(true);
-
           this.isUserLoggedIn = true;
           this.dialogRef.close(this.loginForm.value);
-
           this.messageService.showMessage('Login is successful.', 3000);
 
-          const guestCart: ICartItem[] = JSON.parse(localStorage.getItem('guestCart') || '[]');
-          if (guestCart) {
-            this.postGuestCartForCustomer(guestCart);
+          const guestCart: ICartItem[] = JSON.parse(
+            localStorage.getItem('guestCart') || '[]'
+          );
+          if (guestCart.length) {
+            this._ecommerceService
+              .getLastCart(this.customerId, this.token)
+              .subscribe((response) => {
+                this.lastCartId = response.data.cartId;
+                this.postGuestCartForCustomer(guestCart, this.lastCartId + 1);
+              });
           } else {
-            this.getLastCartForCustomer();
+            this._ecommerceService
+              .getLastCart(this.customerId, this.token)
+              .subscribe((response) => {
+                localStorage.setItem('cartId', response.cartId.toString());
+                this.lastCartId = response.cartId;
+              });
           }
         },
         error: () => {
@@ -108,28 +117,20 @@ export class LoginDialogComponent {
   }
 
   /**
-   * Fetches the last cart for the customer
-   */
-  private getLastCartForCustomer(): void {
-    this._ecommerceService
-      .getLastCart(this.customerId, this.token)
-      .subscribe((response) => {
-        localStorage.setItem('cartId', response.cartId.toString());
-      });
-  }
-
-  /**
    * Post guest cart as new cart for the logged in customer
-   * 
-   * @param localStorageGuestCart Guest cart that we have in local storage 
+   *
+   * @param localStorageGuestCart Guest cart that we have in local storage
+   * @param cartId Cart ID of the guest cart
    */
-  private postGuestCartForCustomer(localStorageGuestCart: ICartItem[]): void {
-    console.log('localStorageGuestCart: ', localStorageGuestCart);
+  private postGuestCartForCustomer(
+    localStorageGuestCart: ICartItem[],
+    cartId: number
+  ): void {
     const payload: ICartData = {
       isGuest: false,
-      cartId: 1,
+      cartId: cartId,
       custId: this.customerId,
-      cartItems: localStorageGuestCart
+      cartItems: localStorageGuestCart,
     };
 
     this._ecommerceService.postCartItems(payload).subscribe({

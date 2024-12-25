@@ -205,20 +205,7 @@ export class ECommerceService {
       `Bearer ${this.getToken()}`
     );
 
-    return this.http
-      .post<IPostCartItemsResponse>(endpoint, payload, { headers })
-      .pipe(
-        tap((response: IPostCartItemsResponse) => {
-          const addedItemsCount = response.data[0].cartItems.reduce(
-            (sum, item) => sum + item.quantity,
-            0
-          );
-        }),
-        catchError((error) => {
-          console.error('Error adding items to cart:', error);
-          throw error;
-        })
-      );
+    return this.http.post<IPostCartItemsResponse>(endpoint, payload, { headers });
   }
 
   /**
@@ -234,9 +221,7 @@ export class ECommerceService {
       `Bearer ${this.getToken()}`
     );
 
-    return this.http.put<IPostCartItemsResponse>(endpoint, payload, {
-      headers,
-    });
+    return this.http.put<IPostCartItemsResponse>(endpoint, payload, { headers });
   }
 
   /**
