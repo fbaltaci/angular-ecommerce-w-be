@@ -3,6 +3,7 @@ import { Component, OnInit } from '@angular/core';
 import { ICartItem } from '../../models/ICartItem';
 import { ECommerceService } from '../../services/ecommerce.service';
 import { UserService } from '../../services/user.service';
+import { CartService } from '../../services/cart.service';
 
 /**
  * Cart Page Component
@@ -23,10 +24,12 @@ export class CartPageComponent implements OnInit {
    * Constructor
    *
    * @param _ecommerceService ECommerce Service
+   * @param cartService Cart Service
    * @param userService User Service
    */
   constructor(
     private _ecommerceService: ECommerceService,
+    private cartService: CartService,
     private userService: UserService
   ) {}
 
@@ -35,11 +38,15 @@ export class CartPageComponent implements OnInit {
    */
   ngOnInit(): void {
     this.isUserLoggedIn = this.userService.isUserLoggedIn;
-    if (this.isUserLoggedIn) {
-      this.fetchCartItems();
-    } else {
-      this.loadGuestCart();
-    }
+
+    this.cartService.cartItems.subscribe((cartItems) => {
+      this.cartItems = cartItems;
+      this.calculateCartTotal();
+    });
+
+    const defaultCartKey = this.isUserLoggedIn ? 'userCart' : 'guestCart';
+    this.cartItems = this.cartService['getCartFromLocalStorage'](defaultCartKey);
+    this.calculateCartTotal();
   }
 
   /**
@@ -55,53 +62,40 @@ export class CartPageComponent implements OnInit {
    * @param item - The ID of the product to remove
    */
   onRemoveItemFromCart(item: ICartItem): void {
-    const custId = Number(localStorage.getItem('customerId'));
-    const cartId = Number(localStorage.getItem('cartId'));
-    this._ecommerceService.deleteCartItem(custId, cartId, [item]).subscribe({
-      next: (response) => {
-        if (response.results) {
-          this.cartItems = this.cartItems.filter(
-            (cartItem) => cartItem.productId !== item.productId
-          );
-          this.calculateCartTotal();
-        }
-      },
-      error: (error) => {
-        console.error('Error deleting cart item:', error);
-      },
-    });
+    const cartKey = this.isUserLoggedIn ? 'userCart' : 'guestCart';
+    this.cartService.removeFromCart(cartKey, item.productId);
   }
 
-  /**
-   * Load guest cart items from localStorage and calculate total
-   */
-  private loadGuestCart(): void {
-    const storedCart = localStorage.getItem('guestCart');
-    if (storedCart) {
-      try {
-        this.cartItems = JSON.parse(storedCart) as ICartItem[];
-        this.calculateCartTotal();
-      } catch (error) {
-        console.error('Error parsing guestCart:', error);
-        this.cartItems = [];
-      }
-    }
-  }
+  // /**
+  //  * Load guest cart items from localStorage and calculate total
+  //  */
+  // private loadGuestCart(): void {
+  //   const storedCart = localStorage.getItem('guestCart');
+  //   if (storedCart) {
+  //     try {
+  //       this.cartItems = JSON.parse(storedCart) as ICartItem[];
+  //       this.calculateCartTotal();
+  //     } catch (error) {
+  //       console.error('Error parsing guestCart:', error);
+  //       this.cartItems = [];
+  //     }
+  //   }
+  // }
 
-  /**
-   * Fetch cart items for the logged-in user
-   */
-  private fetchCartItems(): void {
-    this._ecommerceService.getCartItems(this.userService.cartId).subscribe({
-      next: (response) => {
-        this.cartItems = response.data.cartItems;
-        this.calculateCartTotal();
-      },
-      error: (error) => {
-        console.error('Error fetching cart items:', error);
-      },
-    });
-  }
+  // /**
+  //  * Fetch cart items for the logged-in user
+  //  */
+  // private fetchCartItems(): void {
+  //   this._ecommerceService.getCartItems(this.userService.cartId).subscribe({
+  //     next: (response) => {
+  //       this.cartItems = response.data.cartItems;
+  //       this.calculateCartTotal();
+  //     },
+  //     error: (error) => {
+  //       console.error('Error fetching cart items:', error);
+  //     },
+  //   });
+  // }
 
   /**
    * Calculate the total price of items in the cart

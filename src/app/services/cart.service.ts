@@ -70,12 +70,15 @@ export class CartService {
     );
 
     this.updateCartInLocalStorage(cartKey, updatedCart);
+
+    this.cartItemsSubject.next(updatedCart);
+    this.cartItemCountSubject.next(this.calculateCartItemCount(cartKey, updatedCart));
   }
 
   /**
    * Clear the cart.
    *
-   * @param cartKey - The key to clear the cart from (optional, defaults to 'guestCart').
+   * @param cartKey - The key to clear the cart from
    */
   clearCart(cartKey: string): void {
     localStorage.removeItem(cartKey);
@@ -86,7 +89,7 @@ export class CartService {
   /**
    * Get the current cart items from localStorage.
    *
-   * @param cartKey - The key to clear the cart from (optional, defaults to 'guestCart').
+   * @param cartKey - The key to clear the cart from
    * @returns An array of cart items.
    */
   private getCartFromLocalStorage(cartKey: string): ICartItem[] {
@@ -101,7 +104,7 @@ export class CartService {
   /**
    * Save the updated cart to localStorage and update subjects.
    *
-   * @param cartKey - The key to clear the cart from (optional, defaults to 'guestCart').
+   * @param cartKey - The key to clear the cart from
    * @param cart - The updated cart.
    */
   private updateCartInLocalStorage(cartKey: string, cart: ICartItem[]): void {
@@ -113,7 +116,7 @@ export class CartService {
   /**
    * Calculate the total quantity of items in the cart.
    *
-   * @param cart - The cart to calculate from (optional, defaults to the current cart).
+   * @param cart - The cart to calculate from
    * @returns The total quantity of items in the cart.
    */
   private calculateCartItemCount(cartKey: string, cart: ICartItem[] = this.getCartFromLocalStorage(cartKey)): number {

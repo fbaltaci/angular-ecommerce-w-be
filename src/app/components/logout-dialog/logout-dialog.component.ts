@@ -42,9 +42,14 @@ export class LogOutDialogComponent {
       localStorage.removeItem('token');
       localStorage.removeItem('customerId');
       localStorage.removeItem('cartId');
+      this.cartService.clearCart('customerCart');
     }
-    this.cartService.clearCart();
+    else {
+      this.cartService.clearCart('guestCart');
+    }
+    localStorage.setItem('isUserLoggedIn', 'false');
     this.userService.updateUserLoggedInState(false);
     this.dialogRef.close(true);
   }
 }
+ 
