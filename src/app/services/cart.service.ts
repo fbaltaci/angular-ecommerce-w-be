@@ -10,31 +10,39 @@ import { ICartItem } from '../models/ICartItem';
   providedIn: 'root',
 })
 export class CartService {
-  private readonly localStorageKey = 'guestCart';
-  private cartItemsSubject = new BehaviorSubject<ICartItem[]>(
-    this.getCartFromLocalStorage()
-  );
-  private cartItemCountSubject = new BehaviorSubject<number>(
-    this.calculateCartItemCount()
-  );
-
-  cartItems: Observable<ICartItem[]> = this.cartItemsSubject.asObservable();
-  cartItemCount: Observable<number> = this.cartItemCountSubject.asObservable();
+  private cartItemsSubject: BehaviorSubject<ICartItem[]>;
+  private cartItemCountSubject: BehaviorSubject<number>;
+  cartItems: Observable<ICartItem[]>;
+  cartItemCount: Observable<number>;
 
   /**
    * Constructor
    */
-  constructor() {}
+  constructor() {
+    const defaultCartKey = 'guestCart';
+    const initialCart = this.getCartFromLocalStorage(defaultCartKey);
+    const initialItemCount = this.calculateCartItemCount(
+      defaultCartKey,
+      initialCart
+    );
+
+    this.cartItemsSubject = new BehaviorSubject<ICartItem[]>(initialCart);
+    this.cartItemCountSubject = new BehaviorSubject<number>(initialItemCount);
+
+    this.cartItems = this.cartItemsSubject.asObservable();
+    this.cartItemCount = this.cartItemCountSubject.asObservable();
+  }
 
   /**
    * Add an item to the cart.
    *
+   * @param cartKey - The local storage key to add the item to
    * @param cartItem - The item to add.
    */
-  addToCart(items: ICartItem[] | ICartItem): void {
-    const currentCart = this.getCartFromLocalStorage();
+  addToCart(cartKey: string, items: ICartItem[] | ICartItem): void {
+    const currentCart = this.getCartFromLocalStorage(cartKey);
     const itemsToAdd = Array.isArray(items) ? items : [items];
-  
+
     itemsToAdd.forEach((item) => {
       const existingItemIndex = currentCart.findIndex(
         (cartItem) => cartItem.productId === item.productId
@@ -45,29 +53,32 @@ export class CartService {
         currentCart.push(item);
       }
     });
-  
-    this.updateCartInLocalStorage(currentCart);
+
+    this.updateCartInLocalStorage(cartKey, currentCart);
   }
 
   /**
    * Remove an item from the cart.
    *
+   * @param cartKey - The local storage key to add the item to
    * @param productId - The ID of the product to remove.
    */
-  removeFromCart(productId: number): void {
-    const currentCart = this.getCartFromLocalStorage();
+  removeFromCart(cartKey: string, productId: number): void {
+    const currentCart = this.getCartFromLocalStorage(cartKey);
     const updatedCart = currentCart.filter(
       (item) => item.productId !== productId
     );
 
-    this.updateCartInLocalStorage(updatedCart);
+    this.updateCartInLocalStorage(cartKey, updatedCart);
   }
 
   /**
    * Clear the cart.
+   *
+   * @param cartKey - The key to clear the cart from (optional, defaults to 'guestCart').
    */
-  clearCart(): void {
-    localStorage.removeItem(this.localStorageKey);
+  clearCart(cartKey: string): void {
+    localStorage.removeItem(cartKey);
     this.cartItemsSubject.next([]);
     this.cartItemCountSubject.next(0);
   }
@@ -75,21 +86,28 @@ export class CartService {
   /**
    * Get the current cart items from localStorage.
    *
+   * @param cartKey - The key to clear the cart from (optional, defaults to 'guestCart').
    * @returns An array of cart items.
    */
-  private getCartFromLocalStorage(): ICartItem[] {
-    return JSON.parse(localStorage.getItem(this.localStorageKey) || '[]');
+  private getCartFromLocalStorage(cartKey: string): ICartItem[] {
+    try {
+      return JSON.parse(localStorage.getItem(cartKey) || '[]');
+    } catch (e) {
+      console.error('Error parsing cart data from localStorage', e);
+      return [];
+    }
   }
 
   /**
    * Save the updated cart to localStorage and update subjects.
    *
+   * @param cartKey - The key to clear the cart from (optional, defaults to 'guestCart').
    * @param cart - The updated cart.
    */
-  private updateCartInLocalStorage(cart: ICartItem[]): void {
-    localStorage.setItem(this.localStorageKey, JSON.stringify(cart));
+  private updateCartInLocalStorage(cartKey: string, cart: ICartItem[]): void {
+    localStorage.setItem(cartKey, JSON.stringify(cart));
     this.cartItemsSubject.next(cart);
-    this.cartItemCountSubject.next(this.calculateCartItemCount(cart));
+    this.cartItemCountSubject.next(this.calculateCartItemCount(cartKey, cart));
   }
 
   /**
@@ -98,9 +116,7 @@ export class CartService {
    * @param cart - The cart to calculate from (optional, defaults to the current cart).
    * @returns The total quantity of items in the cart.
    */
-  private calculateCartItemCount(
-    cart: ICartItem[] = this.getCartFromLocalStorage()
-  ): number {
+  private calculateCartItemCount(cartKey: string, cart: ICartItem[] = this.getCartFromLocalStorage(cartKey)): number {
     return cart.reduce((count, item) => count + item.quantity, 0);
   }
 }

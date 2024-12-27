@@ -85,6 +85,7 @@ export class LoginDialogComponent {
           localStorage.setItem('token', this.token);
           this.userService.updateUserLoggedInState(true);
           this.isUserLoggedIn = true;
+          localStorage.setItem('isUserLoggedIn', this.isUserLoggedIn.toString());
           this.dialogRef.close(this.loginForm.value);
           this.messageService.showMessage('Login is successful.', 3000);
 
@@ -104,7 +105,7 @@ export class LoginDialogComponent {
               .subscribe((response) => {
                 localStorage.setItem('cartId', response.data.cartId.toString());
                 this.lastCartId = response.cartId;
-                this.cartService.addToCart(response.data.cartItems);
+                this.cartService.addToCart('customerCart', response.data.cartItems);
               });
           }
         },

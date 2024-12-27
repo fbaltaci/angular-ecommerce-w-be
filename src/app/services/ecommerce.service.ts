@@ -13,6 +13,7 @@ import { IPostProduct } from '../models/IPostProduct';
 import { IDeleteProductResponse } from '../models/IDeleteProductResponse';
 import { IDeleteCartResponse } from '../models/IDeleteCartResponse';
 import { CartService } from './cart.service';
+import { ICartItem } from '../models/ICartItem';
 
 /**
  * ECommerceService
@@ -230,16 +231,19 @@ export class ECommerceService {
    * @param cartId Cart ID
    * @returns Observable of cart items
    */
-  deleteCart(cartId: number): Observable<IDeleteCartResponse> {
-    const endpoint = `${this.baseURL}/ecommerce/cart/${cartId}`;
+  deleteCartItem(custId: number, cartId: number, cartItem: ICartItem[]): Observable<IDeleteCartResponse> {
+    const endpoint = `${this.baseURL}/ecommerce/cartItem`;
     const headers = new HttpHeaders().set(
       'Authorization',
       `Bearer ${this.getToken()}`
     );
+    const payload = {
+      custId,
+      cartId,
+      cartItem
+    }
 
-    return this.http.put<IDeleteCartResponse>(endpoint, {
-      headers,
-    });
+    return this.http.put<IDeleteCartResponse>(endpoint, payload, { headers });
   }
 
   /**

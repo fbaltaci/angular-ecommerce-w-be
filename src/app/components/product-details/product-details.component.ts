@@ -93,7 +93,7 @@ export class ProductDetailsComponent implements OnInit {
       existingCart.push(payload.cartItems[0]);
     }
 
-    this.cartService.addToCart(payload.cartItems);
+    this.cartService.addToCart('guestCart', payload.cartItems);
     this.messageService.showMessage('Item added to cart', 2000);
   }
 

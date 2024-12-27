@@ -50,6 +50,29 @@ export class CartPageComponent implements OnInit {
   }
 
   /**
+   * Removes an item from the cart
+   *
+   * @param item - The ID of the product to remove
+   */
+  onRemoveItemFromCart(item: ICartItem): void {
+    const custId = Number(localStorage.getItem('customerId'));
+    const cartId = Number(localStorage.getItem('cartId'));
+    this._ecommerceService.deleteCartItem(custId, cartId, [item]).subscribe({
+      next: (response) => {
+        if (response.results) {
+          this.cartItems = this.cartItems.filter(
+            (cartItem) => cartItem.productId !== item.productId
+          );
+          this.calculateCartTotal();
+        }
+      },
+      error: (error) => {
+        console.error('Error deleting cart item:', error);
+      },
+    });
+  }
+
+  /**
    * Load guest cart items from localStorage and calculate total
    */
   private loadGuestCart(): void {

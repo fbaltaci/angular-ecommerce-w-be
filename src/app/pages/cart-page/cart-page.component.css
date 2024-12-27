@@ -2,3 +2,8 @@
 .empty-cart {
   flex: 1;
 }
+
+.button-group {
+  align-items: center;
+  display: flex;
+}

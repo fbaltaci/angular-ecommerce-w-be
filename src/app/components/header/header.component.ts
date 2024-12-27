@@ -63,7 +63,7 @@ export class HeaderComponent {
       this._ecommerceService
         .getCartItems(this.userService.cartId)
         .subscribe((cartResponse) => {
-          this.cartService.addToCart(cartResponse.data.cartItems);
+          this.cartService.addToCart('customerCart', cartResponse.data.cartItems);
         });
     }
   }
