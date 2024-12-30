@@ -6,6 +6,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { CheckoutDialogComponent } from '../checkout-dialog/checkout-dialog.component';
 import { CartService } from '../../services/cart.service';
 import { ICartItem } from '../../models/ICartItem';
+import { UserService } from '../../services/user.service';
 
 /**
  * CartPreviewComponent
@@ -34,6 +35,7 @@ export class CartPreviewComponent implements OnInit {
   constructor(
     private _ecommerceService: ECommerceService,
     private cartService: CartService,
+    private userService: UserService,
     private dialog: MatDialog,
     private router: Router
   ) {}
@@ -45,14 +47,28 @@ export class CartPreviewComponent implements OnInit {
     this.cartService.cartItemCount.subscribe((count) => {
       this.cartItemCount = count;
       if (this.cartItemCount > 0) {
-        this.cartItems = JSON.parse(localStorage.getItem('guestCart') || '[]');
-        this.calculateCartTotal();
+        if (this.userService.isUserLoggedIn) {
+          this.cartItems = JSON.parse(
+            localStorage.getItem('customerCart') || '[]'
+          );
+        } else {
+          this.cartItems = JSON.parse(
+            localStorage.getItem('guestCart') || '[]'
+          );
+        }
+
+        this.cartTotal = this.cartItems.reduce(
+          (total, item) => total + item.productPrice * item.quantity,
+          0
+        );
       }
     });
 
-    // if (this.cartId) {
-    //   this.fetchCartItems();
-    // }
+    console.log('CartPreviewComponent: cartId:', this.cartId);
+
+    if (this.cartId) {
+      this.fetchCartItems();
+    }
   }
 
   /**
@@ -70,29 +86,22 @@ export class CartPreviewComponent implements OnInit {
     });
   }
 
-  // /**
-  //  * Fetch cart items from the service
-  //  */
-  // private fetchCartItems(): void {
-  //   this._ecommerceService.getCartItems(this.cartId).subscribe({
-  //     next: (response) => {
-  //       this.cartItems = response.data?.cartItems || [];
-  //       this.calculateCartTotal();
-  //     },
-  //     error: (err) => {
-  //       console.error('Error fetching cart items:', err);
-  //       this.cartItems = [];
-  //     },
-  //   });
-  // }
-
   /**
-   * Calculates the total price of items in the cart
+   * Fetch cart items from the service
    */
-  private calculateCartTotal(): void {
-    this.cartTotal = this.cartItems.reduce(
-      (total, item) => total + item.productPrice * item.quantity,
-      0
-    );
+  private fetchCartItems(): void {
+    this._ecommerceService.getCartItems(this.cartId).subscribe({
+      next: (response) => {
+        this.cartItems = response.data?.cartItems || [];
+        this.cartTotal = this.cartItems.reduce(
+          (total, item) => total + item.productPrice * item.quantity,
+          0
+        );
+      },
+      error: (err) => {
+        console.error('Error fetching cart items:', err);
+        this.cartItems = [];
+      },
+    });
   }
 }

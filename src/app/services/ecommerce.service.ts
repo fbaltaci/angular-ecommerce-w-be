@@ -1,6 +1,6 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { catchError, Observable, tap } from 'rxjs';
+import { Observable, tap } from 'rxjs';
 import { ICartItemsResponse } from '../models/ICartItemsResponse';
 import { IGetAllProductsResponse } from '../models/IGetAllProductsResponse';
 import { IUserLoginPayload } from '../models/IUserLoginPayload';
@@ -13,7 +13,6 @@ import { IPostProduct } from '../models/IPostProduct';
 import { IDeleteProductResponse } from '../models/IDeleteProductResponse';
 import { IDeleteCartResponse } from '../models/IDeleteCartResponse';
 import { CartService } from './cart.service';
-import { ICartItem } from '../models/ICartItem';
 
 /**
  * ECommerceService
@@ -29,9 +28,8 @@ export class ECommerceService {
    * Constructor
    *
    * @param http HttpClient
-   * @param cartService CartService
    */
-  constructor(private http: HttpClient, private cartService: CartService) {}
+  constructor(private http: HttpClient) {}
 
   /**
    * Calls registerUser
@@ -39,9 +37,7 @@ export class ECommerceService {
    * @param payload Payload for userRegister
    * @returns Observable<IUserRegisterResponse>
    */
-  registerUser(
-    payload: IUserRegisterPayload
-  ): Observable<IUserRegisterResponse> {
+  registerUser(payload: IUserRegisterPayload): Observable<IUserRegisterResponse> {
     const endpoint = `${this.baseURL}/auth/register`;
     return this.http.post<IUserRegisterResponse>(endpoint, payload);
   }
@@ -75,9 +71,7 @@ export class ECommerceService {
    * @param categoryId Category ID
    * @returns Observable of products
    */
-  getProductsByCategory(
-    categoryId: number
-  ): Observable<IGetAllProductsResponse> {
+  getProductsByCategory(categoryId: number): Observable<IGetAllProductsResponse> {
     const endpoint = `${this.baseURL}/ecommerce/products/${categoryId}`;
     return this.http.get<IGetAllProductsResponse>(endpoint);
   }
@@ -114,10 +108,7 @@ export class ECommerceService {
    * @param payload Payload
    * @returns Observable of products
    */
-  putProducts(
-    productId: number,
-    payload: IPostProduct
-  ): Observable<IGetAllProductsResponse> {
+  putProducts(productId: number, payload: IPostProduct): Observable<IGetAllProductsResponse> {
     const endpoint = `${this.baseURL}/ecommerce/products/${productId}`;
     const headers = new HttpHeaders().set(
       'Authorization',
@@ -165,15 +156,15 @@ export class ECommerceService {
    * @param custId The ID of the customer
    * @returns Observable of cart items
    */
-  getCartItems(custId: number): Observable<ICartItemsResponse> {
-    const endpoint = `${this.baseURL}/ecommerce/cart/${custId}`;
+  getCartItems(cartId: number): Observable<ICartItemsResponse> {
+    const endpoint = `${this.baseURL}/ecommerce/cart/${cartId}`;
     const headers = new HttpHeaders().set(
       'Authorization',
       `Bearer ${this.getToken()}`
     );
     return this.http.get<ICartItemsResponse>(endpoint, { headers }).pipe(
       tap((response: ICartItemsResponse) => {
-        // 
+        //
       })
     );
   }
@@ -185,17 +176,14 @@ export class ECommerceService {
    * @returns Observable<ICartItemsResponse>
    */
   getLastCart(customerId: number, token: string): Observable<ICartItemsResponse> {
-    const endpoint = `${this.baseURL}/ecommerce/cart/last/${customerId}`;
-    const headers = new HttpHeaders().set(
-      'Authorization',
-      `Bearer ${token}`
-    );
+    const endpoint = `${this.baseURL}/ecommerce/lastCart/${customerId}`;
+    const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
 
     return this.http.get<ICartItemsResponse>(endpoint, { headers });
   }
 
   /**
-   * Adds an item to the cart
+   * Creates a new empty cart for registered users
    *
    * @param productId Product ID
    */
@@ -206,44 +194,62 @@ export class ECommerceService {
       `Bearer ${this.getToken()}`
     );
 
-    return this.http.post<IPostCartItemsResponse>(endpoint, payload, { headers });
+    return this.http.post<IPostCartItemsResponse>(endpoint, payload, {
+      headers,
+    });
   }
 
   /**
    * Updates the cart items
    *
+   * @param cartId Cart ID
    * @param payload Payload
    * @returns Observable of cart items
    */
-  putCartItems(payload: ICartData): Observable<IPostCartItemsResponse> {
-    const endpoint = `${this.baseURL}/ecommerce/cart`;
+  putCartItems(cartId: string, payload: ICartData): Observable<IPostCartItemsResponse> {
+    const endpoint = `${this.baseURL}/ecommerce/cart/${cartId}`;
     const headers = new HttpHeaders().set(
       'Authorization',
       `Bearer ${this.getToken()}`
     );
 
-    return this.http.put<IPostCartItemsResponse>(endpoint, payload, { headers });
+    return this.http.put<IPostCartItemsResponse>(endpoint, payload, {
+      headers,
+    });
+  }
+
+  /**
+   * Deletes the cart
+   *
+   * @param cartId Cart ID
+   * @param productId Product ID
+   * @returns Observable of cart items
+   */
+  deleteCart(cartId: number): Observable<IDeleteCartResponse> {
+    const endpoint = `${this.baseURL}/ecommerce/cart/${cartId}`;
+    const headers = new HttpHeaders().set(
+      'Authorization',
+      `Bearer ${this.getToken()}`
+    );
+
+    return this.http.delete<IDeleteCartResponse>(endpoint, { headers });
   }
 
   /**
    * Deletes a cart item
    *
    * @param cartId Cart ID
+   * @param productId Product ID
    * @returns Observable of cart items
    */
-  deleteCartItem(custId: number, cartId: number, cartItem: ICartItem[]): Observable<IDeleteCartResponse> {
-    const endpoint = `${this.baseURL}/ecommerce/cartItem`;
+  deleteCartItem(cartId: number, productId: number): Observable<IDeleteCartResponse> {
+    const endpoint = `${this.baseURL}/ecommerce/cart/${cartId}/cartItem/${productId}`;
     const headers = new HttpHeaders().set(
       'Authorization',
       `Bearer ${this.getToken()}`
     );
-    const payload = {
-      custId,
-      cartId,
-      cartItem
-    }
 
-    return this.http.put<IDeleteCartResponse>(endpoint, payload, { headers });
+    return this.http.delete<IDeleteCartResponse>(endpoint, { headers });
   }
 
   /**
@@ -254,12 +260,6 @@ export class ECommerceService {
     return localStorage.getItem('token');
   }
 
-  /**
-   * Clears the token from local storage (for logout)
-   */
-  private clearToken(): void {
-    localStorage.removeItem('token');
-  }
 
   /**
    * Stores the token in local storage
