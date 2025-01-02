@@ -16,7 +16,7 @@ import { CartService } from '../../services/cart.service';
   styleUrls: ['./cart-page.component.css'],
 })
 export class CartPageComponent implements OnInit {
-  cartItems!: ICartItem[];
+  cartItems: ICartItem[];
   isUserLoggedIn: boolean = false;
   cartTotal: number = 0;
 
@@ -31,19 +31,19 @@ export class CartPageComponent implements OnInit {
     private _ecommerceService: ECommerceService,
     private cartService: CartService,
     private userService: UserService
-  ) {}
+  ) {
+    this.cartItems = [];
+    this.cartService.cartItems.subscribe((cartItems) => {
+      this.cartItems = cartItems;
+      this.calculateCartTotal();
+    });
+  }
 
   /**
    * ngOnInit
    */
   ngOnInit(): void {
     this.isUserLoggedIn = this.userService.isUserLoggedIn;
-
-    this.cartService.cartItems.subscribe((cartItems) => {
-      this.cartItems = cartItems;
-      this.calculateCartTotal();
-    });
-
     const defaultCartKey = this.isUserLoggedIn ? 'userCart' : 'guestCart';
     this.cartItems = this.cartService['getCartFromLocalStorage'](defaultCartKey);
     this.calculateCartTotal();

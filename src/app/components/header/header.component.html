@@ -23,7 +23,6 @@
                 <li class="cart-item" (mouseenter)="showCartPreview = true" (mouseleave)="showCartPreview = false">
                     <a [routerLink]="['/cart']">
                         <i class="fas fa-shopping-cart"></i>
-                        <span *ngIf="cartItemCount > 0" class="cart-count">{{ cartItemCount }}</span>
                     </a>
                     <!-- Cart Preview Dropdown -->
                     <div class="cart-preview-dropdown" *ngIf="showCartPreview">

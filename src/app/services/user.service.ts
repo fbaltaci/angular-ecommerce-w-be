@@ -43,8 +43,8 @@ export class UserService {
   /**
    * Gets the cart id from the local storage
    */
-  get cartId(): number {
+  get cartId(): string {
     const cartId = localStorage.getItem('cartId');
-    return cartId ? Number(cartId) : 0;
+    return cartId ? cartId : '';
   }
 }

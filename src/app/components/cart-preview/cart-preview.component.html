@@ -3,6 +3,8 @@
   <div class="cart-preview">
     <div class="cart-subtotal">
       <ng-container *ngIf="cartItemCount !== 0; else emptyCart">
+        <span *ngIf="cartItemCount > 0" class="cart-count">Count: {{ cartItemCount }}</span>
+        <br>
         <span>Subtotal: ${{ cartTotal }}</span>
       </ng-container>
       <ng-template #emptyCart>

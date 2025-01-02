@@ -41,7 +41,7 @@ export class LoginDialogComponent {
   // Private Values
   private customerId: number = 0;
   private token: string = '';
-  private lastCartId: number = 0;
+  private lastCartId: string = '';
 
   /**
    * Constructor
@@ -97,7 +97,7 @@ export class LoginDialogComponent {
               .getLastCart(this.customerId, this.token)
               .subscribe((response) => {
                 this.lastCartId = response.data.cartId;
-                this.postGuestCartForCustomer(guestCart, this.lastCartId + 1);
+                this.postGuestCartForCustomer(guestCart, this.lastCartId);
               });
           } else {
             this._ecommerceService
@@ -125,14 +125,11 @@ export class LoginDialogComponent {
    * @param localStorageGuestCart Guest cart that we have in local storage
    * @param cartId Cart ID of the guest cart
    */
-  private postGuestCartForCustomer(
-    localStorageGuestCart: ICartItem[],
-    cartId: number
-  ): void {
+  private postGuestCartForCustomer(localStorageGuestCart: ICartItem[], cartId: string): void {
     const payload: ICartData = {
       isGuest: false,
       cartId: cartId,
-      custId: this.customerId,
+      customerId: this.customerId,
       cartItems: localStorageGuestCart,
     };
 

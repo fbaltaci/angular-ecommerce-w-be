@@ -27,9 +27,7 @@ import { UserService } from '../../services/user.service';
 export class HeaderComponent {
   showCartPreview: boolean = false;
   showProfilePreview: boolean = false;
-
-  cartId: number = 0;
-  cartItemCount: number = 0;
+  cartId: string = '';
 
   /**
    * Constructor
@@ -49,9 +47,6 @@ export class HeaderComponent {
    * ngOnInit
    */
   ngOnInit(): void {
-    this.cartService.cartItemCount.subscribe((count) => {
-      this.cartItemCount = count;
-    });
     this.fetchCartItemsCount();
   }
 

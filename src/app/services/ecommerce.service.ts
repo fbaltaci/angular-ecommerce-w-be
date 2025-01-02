@@ -156,7 +156,7 @@ export class ECommerceService {
    * @param custId The ID of the customer
    * @returns Observable of cart items
    */
-  getCartItems(cartId: number): Observable<ICartItemsResponse> {
+  getCartItems(cartId: string): Observable<ICartItemsResponse> {
     const endpoint = `${this.baseURL}/ecommerce/cart/${cartId}`;
     const headers = new HttpHeaders().set(
       'Authorization',

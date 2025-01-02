@@ -5,7 +5,7 @@ import { ICartItem } from './ICartItem';
  */
 export interface ICartData {
   isGuest: boolean;
-  cartId: number;
-  custId: number;
+  cartId: string;
+  customerId: number;
   cartItems: ICartItem[];
 }

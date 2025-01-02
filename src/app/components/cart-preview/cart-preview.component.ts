@@ -19,9 +19,11 @@ import { UserService } from '../../services/user.service';
   styleUrl: './cart-preview.component.css',
 })
 export class CartPreviewComponent implements OnInit {
-  @Input() cartId!: number;
+  @Input() cartId: string = '';
   cartTotal: number = 0;
   cartItemCount: number = 0;
+
+  // Private Values
   private cartItems: ICartItem[] = [];
 
   /**
@@ -44,27 +46,29 @@ export class CartPreviewComponent implements OnInit {
    * ngOnInit
    */
   ngOnInit(): void {
+    if(this.userService.isUserLoggedIn) {
+      const customerId = Number(localStorage.getItem('customerId')) || 0;
+      const token = localStorage.getItem('token') || '';
+      this._ecommerceService.getLastCart(customerId, token).subscribe((response) => {
+        this.cartItems = response.data?.cartItems || [];
+        console.log('Cart Items:', this.cartItems);
+      });
+    }
     this.cartService.cartItemCount.subscribe((count) => {
       this.cartItemCount = count;
       if (this.cartItemCount > 0) {
         if (this.userService.isUserLoggedIn) {
-          this.cartItems = JSON.parse(
-            localStorage.getItem('customerCart') || '[]'
-          );
+          this.cartItems = JSON.parse(localStorage.getItem('customerCart') || '[]');
+          this.cartId = JSON.parse(localStorage.getItem('cartId') || '');
         } else {
           this.cartItems = JSON.parse(
             localStorage.getItem('guestCart') || '[]'
           );
         }
 
-        this.cartTotal = this.cartItems.reduce(
-          (total, item) => total + item.productPrice * item.quantity,
-          0
-        );
+        this.cartTotal = this.cartItems.reduce((total, item) => total + item.productPrice * item.quantity, 0);
       }
     });
-
-    console.log('CartPreviewComponent: cartId:', this.cartId);
 
     if (this.cartId) {
       this.fetchCartItems();

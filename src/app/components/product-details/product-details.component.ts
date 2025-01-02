@@ -53,7 +53,7 @@ export class ProductDetailsComponent implements OnInit {
     const addToCartPayload: ICartData = {
       isGuest: !isUserLoggedIn,
       cartId: this.userService.cartId,
-      custId: this.userService.customerId,
+      customerId: this.userService.customerId,
       cartItems: [
         {
           productId: productDetail.productId,
