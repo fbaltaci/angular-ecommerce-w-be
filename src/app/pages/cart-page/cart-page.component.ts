@@ -1,9 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
-import { ICartItem } from '../../models/ICartItem';
+import { ICartItem } from '../../models/ICreateCartPayload';
 import { ECommerceService } from '../../services/ecommerce.service';
-import { UserService } from '../../services/user.service';
-import { CartService } from '../../services/cart.service';
 
 /**
  * Cart Page Component
@@ -16,37 +14,32 @@ import { CartService } from '../../services/cart.service';
   styleUrls: ['./cart-page.component.css'],
 })
 export class CartPageComponent implements OnInit {
-  cartItems: ICartItem[];
+  cartItems: ICartItem[] = [];
   isUserLoggedIn: boolean = false;
   cartTotal: number = 0;
+
+  // Privates
+  private readonly GUEST_CART_KEY = 'guestCart';
+  private readonly CUSTOMER_CART_KEY = 'customerCart';
 
   /**
    * Constructor
    *
-   * @param _ecommerceService ECommerce Service
-   * @param cartService Cart Service
-   * @param userService User Service
+   * @param _ecommerceService ECommerceService
    */
-  constructor(
-    private _ecommerceService: ECommerceService,
-    private cartService: CartService,
-    private userService: UserService
-  ) {
-    this.cartItems = [];
-    this.cartService.cartItems.subscribe((cartItems) => {
-      this.cartItems = cartItems;
-      this.calculateCartTotal();
-    });
-  }
+  constructor(private _ecommerceService: ECommerceService) {}
 
   /**
    * ngOnInit
    */
   ngOnInit(): void {
-    this.isUserLoggedIn = this.userService.isUserLoggedIn;
-    const defaultCartKey = this.isUserLoggedIn ? 'userCart' : 'guestCart';
-    this.cartItems = this.cartService['getCartFromLocalStorage'](defaultCartKey);
-    this.calculateCartTotal();
+    this.isUserLoggedIn = !!localStorage.getItem('token');
+
+    if (this.isUserLoggedIn) {
+      this.loadUserCart();
+    } else {
+      this.loadGuestCart();
+    }
   }
 
   /**
@@ -62,40 +55,66 @@ export class CartPageComponent implements OnInit {
    * @param item - The ID of the product to remove
    */
   onRemoveItemFromCart(item: ICartItem): void {
-    const cartKey = this.isUserLoggedIn ? 'userCart' : 'guestCart';
-    this.cartService.removeFromCart(cartKey, item.productId);
+    const cartKey = this.isUserLoggedIn ? this.CUSTOMER_CART_KEY : this.GUEST_CART_KEY;
+    const currentCart = this.getCartFromLocalStorage(cartKey);
+    const updatedCart = currentCart.filter((cartItem) => cartItem.productId !== item.productId);
+
+    this.updateCartInLocalStorage(cartKey, updatedCart);
+    this.cartItems = updatedCart;
+    this.calculateCartTotal();
   }
 
-  // /**
-  //  * Load guest cart items from localStorage and calculate total
-  //  */
-  // private loadGuestCart(): void {
-  //   const storedCart = localStorage.getItem('guestCart');
-  //   if (storedCart) {
-  //     try {
-  //       this.cartItems = JSON.parse(storedCart) as ICartItem[];
-  //       this.calculateCartTotal();
-  //     } catch (error) {
-  //       console.error('Error parsing guestCart:', error);
-  //       this.cartItems = [];
-  //     }
-  //   }
-  // }
+  /**
+   * Load guest cart from localStorage
+   */
+  private loadGuestCart(): void {
+    this.cartItems = this.getCartFromLocalStorage(this.GUEST_CART_KEY);
+    this.calculateCartTotal();
+  }
 
-  // /**
-  //  * Fetch cart items for the logged-in user
-  //  */
-  // private fetchCartItems(): void {
-  //   this._ecommerceService.getCartItems(this.userService.cartId).subscribe({
-  //     next: (response) => {
-  //       this.cartItems = response.data.cartItems;
-  //       this.calculateCartTotal();
-  //     },
-  //     error: (error) => {
-  //       console.error('Error fetching cart items:', error);
-  //     },
-  //   });
-  // }
+  /**
+   * Load user cart from API
+   */
+  private loadUserCart(): void {
+    const cartId = localStorage.getItem(this.CUSTOMER_CART_KEY);
+    if (cartId) {
+      this._ecommerceService.getCartItems(cartId).subscribe({
+        next: (response) => {
+          this.cartItems = response.data[0].cartItems;
+          this.calculateCartTotal();
+        },
+        error: (error) => {
+          console.error('Error fetching user cart:', error);
+          this.cartItems = [];
+        },
+      });
+    } else {
+      console.warn('No cart ID found for logged-in user.');
+    }
+  }
+
+  /**
+   * Get cart data from localStorage
+   * @param cartKey - The key for the cart in localStorage
+   * @returns An array of cart items
+   */
+  private getCartFromLocalStorage(cartKey: string): ICartItem[] {
+    try {
+      return JSON.parse(localStorage.getItem(cartKey) || '[]');
+    } catch (error) {
+      console.error(`Error retrieving cart for key ${cartKey}:`, error);
+      return [];
+    }
+  }
+
+  /**
+   * Save updated cart to localStorage
+   * @param cartKey - The key for the cart in localStorage
+   * @param cartItems - The updated cart items
+   */
+  private updateCartInLocalStorage(cartKey: string, cartItems: ICartItem[]): void {
+    localStorage.setItem(cartKey, JSON.stringify(cartItems));
+  }
 
   /**
    * Calculate the total price of items in the cart

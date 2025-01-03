@@ -4,7 +4,6 @@ import { RouterModule } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 import { RegisterDialogComponent } from '../register-dialog/register-dialog.component';
 import { LoginDialogComponent } from '../login-dialog/login-dialog.component';
-import { UserService } from '../../services/user.service';
 import { LogOutDialogComponent } from '../logout-dialog/logout-dialog.component';
 
 /**
@@ -23,21 +22,18 @@ export class ProfilePreviewComponent {
 
   /**
    * Constructor
+   * 
+   * @param dialog MatDialog
    */
   constructor(
-    private dialog: MatDialog,
-    private userService: UserService
+    private dialog: MatDialog
   ) {}
 
    /**
    * ngOnInit
    */
    ngOnInit(): void {
-    // Subscribe to user login state
-    this.userService.userLoggedIn$.subscribe((isLoggedIn) => {
-      this.isUserLoggedIn = isLoggedIn;
-      this.customerId = isLoggedIn ? this.userService.customerId : 0;
-    });
+    this.checkLoginState();
   }
 
   /**
@@ -55,6 +51,8 @@ export class ProfilePreviewComponent {
   onLoginClick(): void {
     this.dialog.open(LoginDialogComponent, {
       width: '500px',
+    }).afterClosed().subscribe(() => {
+      this.checkLoginState();
     });
   }
 
@@ -62,8 +60,36 @@ export class ProfilePreviewComponent {
    * User sign out
    */
   onLogOut(): void {
-    this.dialog.open(LogOutDialogComponent, {
+    const dialogRef = this.dialog.open(LogOutDialogComponent, {
       width: '500px',
     });
+
+    dialogRef.afterClosed().subscribe((confirmed) => {
+      if (confirmed) {
+        this.handleLogout();
+      }
+    });
+  }
+
+  /**
+   * Perform logout actions
+   */
+  private handleLogout(): void {
+    localStorage.removeItem('token');
+    localStorage.removeItem('customerId');
+    localStorage.removeItem('cartId');
+    this.isUserLoggedIn = false;
+    this.customerId = 0;
+  }
+
+  /**
+   * Check login state from localStorage
+   */
+  private checkLoginState(): void {
+    const token = localStorage.getItem('token');
+    const customerId = localStorage.getItem('customerId');
+
+    this.isUserLoggedIn = !!token;
+    this.customerId = this.isUserLoggedIn && customerId ? Number(customerId) : 0;
   }
 }

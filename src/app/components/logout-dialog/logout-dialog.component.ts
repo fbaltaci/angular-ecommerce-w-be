@@ -1,7 +1,5 @@
 import { Component } from '@angular/core';
 import { MatDialogRef } from '@angular/material/dialog';
-import { UserService } from '../../services/user.service';
-import { CartService } from '../../services/cart.service';
 
 /**
  * LogOutDialogComponent
@@ -19,12 +17,9 @@ export class LogOutDialogComponent {
    * Constructor
    *
    * @param dialogRef MatDialogRef
-   * @param userService UserService
    */
   constructor(
-    private dialogRef: MatDialogRef<LogOutDialogComponent>,
-    private userService: UserService,
-    private cartService: CartService
+    private dialogRef: MatDialogRef<LogOutDialogComponent>
   ) {}
 
   /**
@@ -38,17 +33,8 @@ export class LogOutDialogComponent {
    * Confirm sign out
    */
   confirmSignOut(): void {
-    if (this.userService.isUserLoggedIn) {
-      localStorage.removeItem('token');
-      localStorage.removeItem('customerId');
-      localStorage.removeItem('cartId');
-      this.cartService.clearCart('customerCart');
-    }
-    else {
-      this.cartService.clearCart('guestCart');
-    }
+    localStorage.clear();
     localStorage.setItem('isUserLoggedIn', 'false');
-    this.userService.updateUserLoggedInState(false);
     this.dialogRef.close(true);
   }
 }

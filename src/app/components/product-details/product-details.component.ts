@@ -5,8 +5,6 @@ import { ECommerceService } from '../../services/ecommerce.service';
 import { ICreateCartPayload } from '../../models/ICreateCartPayload';
 import { ICartItem } from '../../models/ICartItem';
 import { MessageService } from '../../services/message.service';
-import { UserService } from '../../services/user.service';
-import { CartService } from '../../services/cart.service';
 
 /**
  * Product Details Component
@@ -22,6 +20,10 @@ export class ProductDetailsComponent implements OnInit {
   @Input() productDetail!: IProductDetailsResponse;
   isUserLoggedIn: boolean = false;
 
+  // Privates
+  private readonly GUEST_CART_KEY = 'guestCart';
+  private readonly CUSTOMER_CART_KEY = 'customerCart';
+
   /**
    * Constructor
    *
@@ -30,8 +32,6 @@ export class ProductDetailsComponent implements OnInit {
    */
   constructor(
     private readonly _ecommerceService: ECommerceService,
-    private readonly cartService: CartService,
-    private readonly userService: UserService,
     private readonly messageService: MessageService
   ) {}
 
@@ -39,64 +39,90 @@ export class ProductDetailsComponent implements OnInit {
    * ngOnInit
    */
   ngOnInit(): void {
-    this.userService.userLoggedIn$.subscribe((isLoggedIn) => {
-      this.isUserLoggedIn = isLoggedIn;
-    });
+    this.checkLoginState();
   }
 
   /**
    * Add product to cart
+   * @param productDetail - The product details
    */
   addToCart(productDetail: IProductDetailsResponse): void {
-    const isUserLoggedIn = !!this.userService.isUserLoggedIn;
-
-    const addToCartPayload: ICreateCartPayload = {
-      isGuest: !isUserLoggedIn,
-      customerId: this.userService.customerId,
-      cartItems: [
-        {
-          productId: productDetail.productId,
-          quantity: 1,
-          productShortName: productDetail.productShortName,
-          addedDate: new Date().toISOString(),
-          productName: productDetail.productName,
-          categoryName: productDetail.categoryName,
-          productImageUrl: productDetail.productImageUrl,
-          productPrice: productDetail.productPrice,
-        } as ICartItem,
-      ],
+    const cartItem: ICartItem = {
+      productId: productDetail.productId,
+      quantity: 1,
+      productShortName: productDetail.productShortName,
+      addedDate: new Date().toISOString(),
+      productName: productDetail.productName,
+      categoryName: productDetail.categoryName,
+      productImageUrl: productDetail.productImageUrl,
+      productPrice: productDetail.productPrice,
     };
 
-    if (!isUserLoggedIn) {
-      const existingCart: ICartItem[] = JSON.parse(
-        localStorage.getItem('guestCart') || '[]'
-      );
-      
-      const existingItemIndex = existingCart.findIndex(
-        (item) => item.productId === addToCartPayload.cartItems[0].productId
-      );
-      
-      if (existingItemIndex === -1) {
-        existingCart.push(addToCartPayload.cartItems[0]);
-      } else {
-        existingCart[existingItemIndex].quantity +=
-          addToCartPayload.cartItems[0].quantity;
-      }
-
-      this.cartService.addToCart('guestCart', addToCartPayload.cartItems);
-      this.messageService.showMessage('Item added to cart', 2000);
+    if (!this.isUserLoggedIn) {
+      this.addToGuestCart(cartItem);
     } else {
-      this._ecommerceService.postCart(addToCartPayload).subscribe({
-        next: () => {
-          this.messageService.showMessage(
-            'Added to registered user cart',
-            2000
-          );
-        },
-        error: (err) => {
-          this.messageService.showMessage(`Error adding to cart: ${err}`, 2000);
-        },
-      });
+      this.addToUserCart(cartItem);
     }
   }
+
+  /**
+   * Add product to guest cart
+   * 
+   * @param cartItem - The item to add to the guest cart
+   */
+  private addToGuestCart(cartItem: ICartItem): void {
+    const existingCart: ICartItem[] = JSON.parse(
+      localStorage.getItem(this.GUEST_CART_KEY) || '[]'
+    );
+
+    const existingItemIndex = existingCart.findIndex(
+      (item) => item.productId === cartItem.productId
+    );
+
+    if (existingItemIndex === -1) {
+      existingCart.push(cartItem);
+    } else {
+      existingCart[existingItemIndex].quantity += cartItem.quantity;
+    }
+
+    localStorage.setItem(this.GUEST_CART_KEY, JSON.stringify(existingCart));
+    this.messageService.showMessage('Item added to cart', 2000);
+  }
+
+  /**
+   * Add product to user cart
+   * 
+   * @param cartItem - The item to add to the user cart
+   */
+  private addToUserCart(cartItem: ICartItem): void {
+    const customerId = Number(localStorage.getItem('customerId')) || 0;
+
+    if (!customerId) {
+      this.messageService.showMessage('Error: User not authenticated.', 2000);
+      return;
+    }
+
+    const addToCartPayload: ICreateCartPayload = {
+      isGuest: false,
+      customerId,
+      cartItems: [cartItem],
+    };
+
+    this._ecommerceService.postCart(addToCartPayload).subscribe({
+      next: () => {
+        this.messageService.showMessage('Added to registered user cart', 2000);
+      },
+      error: (err) => {
+        this.messageService.showMessage(`Error adding to cart: ${err}`, 2000);
+      },
+    });
+  }
+
+    /**
+   * Check login state
+   */
+    private checkLoginState(): void {
+      const token = localStorage.getItem('token');
+      this.isUserLoggedIn = !!token;
+    }
 }

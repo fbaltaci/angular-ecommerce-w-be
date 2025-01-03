@@ -1,7 +1,7 @@
 import { ICartItem } from './ICreateCartPayload';
 
 /**
- * Interface for the response of the postCartItems method in the CartService.
+ * Interface for the response of the postCartItems.
  */
 export interface ICreateCartResponse {
   message: string;

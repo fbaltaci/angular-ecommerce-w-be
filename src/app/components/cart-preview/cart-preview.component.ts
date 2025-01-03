@@ -4,8 +4,6 @@ import { ECommerceService } from '../../services/ecommerce.service';
 import { Router, RouterModule } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 import { CheckoutDialogComponent } from '../checkout-dialog/checkout-dialog.component';
-import { CartService } from '../../services/cart.service';
-import { UserService } from '../../services/user.service';
 import { ICartItem } from '../../models/ICreateCartPayload';
 
 /**
@@ -16,7 +14,7 @@ import { ICartItem } from '../../models/ICreateCartPayload';
   standalone: true,
   imports: [RouterModule, CommonModule],
   templateUrl: './cart-preview.component.html',
-  styleUrl: './cart-preview.component.css',
+  styleUrls: ['./cart-preview.component.css']
 })
 export class CartPreviewComponent implements OnInit {
   @Input() cartId: string = '';
@@ -25,19 +23,18 @@ export class CartPreviewComponent implements OnInit {
 
   // Private Values
   private cartItems: ICartItem[] = [];
+  private readonly GUEST_CART_KEY = 'guestCart';
+  private readonly CUSTOMER_CART_KEY = 'customerCart';
 
   /**
    * Constructor
    *
-   * @param _ecommerceService
-   * @param cartService
-   * @param dialog
-   * @param router
+   * @param _ecommerceService ECommerceService
+   * @param dialog MatDialog
+   * @param router Router
    */
   constructor(
     private _ecommerceService: ECommerceService,
-    private cartService: CartService,
-    private userService: UserService,
     private dialog: MatDialog,
     private router: Router
   ) {}
@@ -46,30 +43,11 @@ export class CartPreviewComponent implements OnInit {
    * ngOnInit
    */
   ngOnInit(): void {
-    if(this.userService.isUserLoggedIn) {
-      const customerId = Number(localStorage.getItem('customerId')) || 0;
-      this._ecommerceService.getLastCart(customerId).subscribe((response) => {
-        this.cartItems = response.data[0].cartItems || [];
-      });
-    }
-    this.cartService.cartItemCount.subscribe((count) => {
-      this.cartItemCount = count;
-      if (this.cartItemCount > 0) {
-        if (this.userService.isUserLoggedIn) {
-          this.cartItems = JSON.parse(localStorage.getItem('customerCart') || '[]');
-          this.cartId = JSON.parse(localStorage.getItem('cartId') || '');
-        } else {
-          this.cartItems = JSON.parse(
-            localStorage.getItem('guestCart') || '[]'
-          );
-        }
-
-        this.cartTotal = this.cartItems.reduce((total, item) => total + item.productPrice * item.quantity, 0);
-      }
-    });
-
+    this.checkLoginState();
     if (this.cartId) {
       this.fetchCartItems();
+    } else {
+      this.loadCartFromLocalStorage();
     }
   }
 
@@ -89,16 +67,39 @@ export class CartPreviewComponent implements OnInit {
   }
 
   /**
-   * Fetch cart items from the service
+   * Check login state and set cartId
    */
+  private checkLoginState(): void {
+    const token = localStorage.getItem('token');
+    const isUserLoggedIn = !!token;
+    this.cartId = isUserLoggedIn ? localStorage.getItem('cartId') || '' : '';
+  }
+
+  /**
+   * Load cart items from localStorage
+   */
+  private loadCartFromLocalStorage(): void {
+    const cartKey = this.cartId ? this.CUSTOMER_CART_KEY : this.GUEST_CART_KEY;
+    const storedCart = JSON.parse(localStorage.getItem(cartKey) || '[]');
+
+    this.cartItems = storedCart;
+    this.cartItemCount = storedCart.reduce((count: number, item: ICartItem) => count + item.quantity, 0);
+    this.cartTotal = storedCart.reduce((total: number, item: ICartItem) => total + item.productPrice * item.quantity, 0);
+  }
+
+  /**
+     * Fetch cart items from the backend
+     */
   private fetchCartItems(): void {
     this._ecommerceService.getCartItems(this.cartId).subscribe({
       next: (response) => {
-        this.cartItems = response.data[0].cartItems || [];
-        this.cartTotal = this.cartItems.reduce(
-          (total, item) => total + item.productPrice * item.quantity,
-          0
-        );
+        const cartData = response.data?.[0]?.cartItems || [];
+        this.cartItems = cartData;
+        this.cartItemCount = cartData.reduce((count, item) => count + item.quantity, 0);
+        this.cartTotal = cartData.reduce((total, item) => total + item.productPrice * item.quantity, 0);
+
+        // Save the updated cart to localStorage
+        localStorage.setItem(this.CUSTOMER_CART_KEY, JSON.stringify(cartData));
       },
       error: (err) => {
         console.error('Error fetching cart items:', err);

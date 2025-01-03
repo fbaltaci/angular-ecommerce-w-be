@@ -13,9 +13,8 @@ import { MatDialogRef } from '@angular/material/dialog';
 import { CommonModule } from '@angular/common';
 import { IUserLoginPayload } from '../../models/IUserLoginPayload';
 import { MessageService } from '../../services/message.service';
-import { UserService } from '../../services/user.service';
-import { CartService } from '../../services/cart.service';
-import { ICartItem, ICreateCartPayload } from '../../models/ICreateCartPayload';
+import { ICreateCartPayload } from '../../models/ICreateCartPayload';
+import { IUserLoginResponse } from '../../models/IUserLoginResponse';
 
 /**
  * LoginDialogComponent
@@ -34,24 +33,24 @@ import { ICartItem, ICreateCartPayload } from '../../models/ICreateCartPayload';
   styleUrl: './login-dialog.component.css',
 })
 export class LoginDialogComponent {
-  isUserLoggedIn: boolean = false;
   loginForm: FormGroup;
-
-  // Private Values
-  private customerId: number = 0;
-  private token: string = '';
-  private lastCartId: string = '';
-  private cartId: string = '';
+  
+  // Privates
+  private readonly GUEST_CART_KEY = 'guestCart';
+  private readonly CUSTOMER_CART_KEY = 'customerCart';
 
   /**
    * Constructor
+   * 
+   * @param dialogRef DialogRef
+   * @param _ecommerceService ECommerceService
+   * @param messageService MessageService
+   * @param fb FormBuilder
    */
   constructor(
     private dialogRef: MatDialogRef<LoginDialogComponent>,
     private _ecommerceService: ECommerceService,
     private messageService: MessageService,
-    private userService: UserService,
-    private cartService: CartService,
     private fb: FormBuilder
   ) {
     this.loginForm = this.fb.group({
@@ -61,14 +60,14 @@ export class LoginDialogComponent {
   }
 
   /**
-   * Close the dialog
+   * Closes the dialog
    */
   close(): void {
-    this.dialogRef.close();
+    this.dialogRef.close({ success: false });
   }
 
   /**
-   * Submit the login form
+   * Submits the login form
    */
   submit(): void {
     if (this.loginForm.valid) {
@@ -78,43 +77,135 @@ export class LoginDialogComponent {
       };
       this._ecommerceService.loginUser(payload).subscribe({
         next: (response) => {
-          this.customerId = response.customerId;
-          this.token = response.token;
-          this.userService.updateUserLoggedInState(true);
-          this.isUserLoggedIn = true;
-          localStorage.setItem('customerId', this.customerId.toString());
-          localStorage.setItem('token', this.token);
-          localStorage.setItem('isUserLoggedIn', this.isUserLoggedIn.toString());
-          this.dialogRef.close(this.loginForm.value);
+          console.log('response: ', response);
+          const { customerId, token } = response;
+          localStorage.setItem('customerId', customerId.toString());
+          localStorage.setItem('token', token);
+          localStorage.setItem('isUserLoggedIn', 'true');
+
+          this.dialogRef.close({ success: true });
           this.messageService.showMessage('Login is successful.', 3000);
-          const guestCart: ICartItem[] = JSON.parse(localStorage.getItem('guestCart') || '[]');
+
+          const guestCart = this.getCartFromLocalStorage(this.GUEST_CART_KEY);
           if (guestCart.length > 0) {
-            console.log('guestCart ', guestCart);
-            const payload: ICreateCartPayload = {
-              isGuest: false,
-              customerId: this.customerId,
-              cartItems: [...guestCart],
-            }
-            console.log(payload);
-            this._ecommerceService
-              .postCart(payload).subscribe((response) => {
-                this.cartId = response.data[0].cartId;
-              });
+            this.migrateGuestCart(customerId, guestCart);
           } else {
-            console.log('102');
-            this._ecommerceService
-              .getLastCart(this.customerId)
-              .subscribe((response) => {
-                localStorage.setItem('cartId', response.data[0].cartId.toString());
-                this.lastCartId = response.data[0].cartId;
-                this.cartService.addToCart('customerCart', response.data[0].cartItems);
-              });
+            this._ecommerceService.getLastCart(customerId).subscribe({
+              next: (response) => {
+                const cart = response.data?.[0];
+                if (cart) {
+                  localStorage.setItem(this.CUSTOMER_CART_KEY, cart.cartId);
+                  this.updateCartInLocalStorage(this.CUSTOMER_CART_KEY, cart.cartItems);
+                }
+              },
+              error: () => this.messageService.showMessage('Failed to fetch last cart.', 3000),
+            });
           }
         },
-        error: () => {
-          this.messageService.showMessage('Login failed. Please check your credentials.', 3000);
-        },
+        error: () => this.messageService.showMessage('Login failed. Please check your credentials.', 3000),
       });
     }
+  }
+
+  /**
+   * Handles login success
+   * 
+   * @param response IUserLoginResponse
+   */
+  private handleLoginSuccess(response: IUserLoginResponse): void {
+    const { customerId, token } = response;
+    localStorage.setItem('customerId', customerId.toString());
+    localStorage.setItem('token', token);
+    localStorage.setItem('isUserLoggedIn', 'true');
+
+    this.dialogRef.close({ success: true });
+    this.messageService.showMessage('Login is successful.', 3000);
+
+    const guestCart = this.getCartFromLocalStorage(this.GUEST_CART_KEY);
+    if (guestCart.length > 0) {
+      const payload: ICreateCartPayload = {
+        isGuest: false,
+        customerId,
+        cartItems: guestCart,
+      };
+  
+      this._ecommerceService.postCart(payload).subscribe({
+        next: (response) => {
+          const cartId = response.data?.[0]?.cartId || '';
+          if (cartId) {
+            localStorage.setItem(this.CUSTOMER_CART_KEY, cartId);
+          }
+        },
+        error: () => this.messageService.showMessage('Failed to migrate guest cart.', 3000),
+      });
+    } else {
+      this.fetchLastCart(customerId);
+    }
+  }
+
+  /**
+   * Migrates guest cart
+   * 
+   * @param customerId Customer ID
+   * @param guestCart Guest cart
+   */
+  private migrateGuestCart(customerId: number, guestCart: any[]): void {
+    const payload: ICreateCartPayload = {
+      isGuest: false,
+      customerId,
+      cartItems: guestCart,
+    };
+
+    this._ecommerceService.postCart(payload).subscribe({
+      next: (response) => {
+        const cartId = response.data?.[0]?.cartId || '';
+        if (cartId) {
+          localStorage.setItem(this.CUSTOMER_CART_KEY, cartId);
+        }
+      },
+      error: () => this.messageService.showMessage('Failed to migrate guest cart.', 3000),
+    });
+  }
+
+  /**
+   * Fetches last cart
+   * 
+   * @param customerId Customer ID
+   */
+  private fetchLastCart(customerId: number): void {
+    this._ecommerceService.getLastCart(customerId).subscribe({
+      next: (response) => {
+        const cart = response.data?.[0];
+        if (cart) {
+          localStorage.setItem(this.CUSTOMER_CART_KEY, cart.cartId);
+          this.updateCartInLocalStorage(this.CUSTOMER_CART_KEY, cart.cartItems);
+        }
+      },
+      error: () => this.messageService.showMessage('Failed to fetch last cart.', 3000),
+    });
+  }
+
+  /**
+   * Gets cart from local storage
+   * 
+   * @param cartKey Cart key
+   */
+  private getCartFromLocalStorage(cartKey: string): any[] {
+    try {
+      return JSON.parse(localStorage.getItem(cartKey) || '[]');
+    } catch (error) {
+      console.error(`Error retrieving cart for key ${cartKey}`, error);
+      return [];
+    }
+  }
+
+  /**
+   * Updates cart in local storage
+   * 
+   * @param cartKey Cart key
+   * @param cartItems Cart items
+   */
+  private updateCartInLocalStorage(cartKey: string, cartItems: any[]): void {
+    localStorage.setItem(cartKey, JSON.stringify(cartItems));
   }
 }
