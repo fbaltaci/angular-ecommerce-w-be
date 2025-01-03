@@ -14,9 +14,8 @@ import { CommonModule } from '@angular/common';
 import { IUserLoginPayload } from '../../models/IUserLoginPayload';
 import { MessageService } from '../../services/message.service';
 import { UserService } from '../../services/user.service';
-import { ICartData } from '../../models/ICartData';
-import { ICartItem } from '../../models/ICartItem';
 import { CartService } from '../../services/cart.service';
+import { ICartItem, ICreateCartPayload } from '../../models/ICreateCartPayload';
 
 /**
  * LoginDialogComponent
@@ -42,6 +41,7 @@ export class LoginDialogComponent {
   private customerId: number = 0;
   private token: string = '';
   private lastCartId: string = '';
+  private cartId: string = '';
 
   /**
    * Constructor
@@ -76,72 +76,45 @@ export class LoginDialogComponent {
         username: this.loginForm.value.username,
         pwd: this.loginForm.value.password,
       };
-
       this._ecommerceService.loginUser(payload).subscribe({
         next: (response) => {
           this.customerId = response.customerId;
           this.token = response.token;
-          localStorage.setItem('customerId', this.customerId.toString());
-          localStorage.setItem('token', this.token);
           this.userService.updateUserLoggedInState(true);
           this.isUserLoggedIn = true;
+          localStorage.setItem('customerId', this.customerId.toString());
+          localStorage.setItem('token', this.token);
           localStorage.setItem('isUserLoggedIn', this.isUserLoggedIn.toString());
           this.dialogRef.close(this.loginForm.value);
           this.messageService.showMessage('Login is successful.', 3000);
-
-          const guestCart: ICartItem[] = JSON.parse(
-            localStorage.getItem('guestCart') || '[]'
-          );
-          if (guestCart.length) {
+          const guestCart: ICartItem[] = JSON.parse(localStorage.getItem('guestCart') || '[]');
+          if (guestCart.length > 0) {
+            console.log('guestCart ', guestCart);
+            const payload: ICreateCartPayload = {
+              isGuest: false,
+              customerId: this.customerId,
+              cartItems: [...guestCart],
+            }
+            console.log(payload);
             this._ecommerceService
-              .getLastCart(this.customerId, this.token)
-              .subscribe((response) => {
-                this.lastCartId = response.data.cartId;
-                this.postGuestCartForCustomer(guestCart, this.lastCartId);
+              .postCart(payload).subscribe((response) => {
+                this.cartId = response.data[0].cartId;
               });
           } else {
+            console.log('102');
             this._ecommerceService
-              .getLastCart(this.customerId, this.token)
+              .getLastCart(this.customerId)
               .subscribe((response) => {
-                localStorage.setItem('cartId', response.data.cartId.toString());
-                this.lastCartId = response.cartId;
-                this.cartService.addToCart('customerCart', response.data.cartItems);
+                localStorage.setItem('cartId', response.data[0].cartId.toString());
+                this.lastCartId = response.data[0].cartId;
+                this.cartService.addToCart('customerCart', response.data[0].cartItems);
               });
           }
         },
         error: () => {
-          this.messageService.showMessage(
-            'Login failed. Please check your credentials.',
-            3000
-          );
+          this.messageService.showMessage('Login failed. Please check your credentials.', 3000);
         },
       });
     }
-  }
-
-  /**
-   * Post guest cart as new cart for the logged in customer
-   *
-   * @param localStorageGuestCart Guest cart that we have in local storage
-   * @param cartId Cart ID of the guest cart
-   */
-  private postGuestCartForCustomer(localStorageGuestCart: ICartItem[], cartId: string): void {
-    const payload: ICartData = {
-      isGuest: false,
-      cartId: cartId,
-      customerId: this.customerId,
-      cartItems: localStorageGuestCart,
-    };
-
-    this._ecommerceService.postCartItems(payload).subscribe({
-      next: () => {
-        this.messageService.showMessage('Cart successfully transferred!', 3000);
-        localStorage.removeItem('guestCart');
-      },
-      error: (error) => {
-        console.error('Error posting guest cart:', error);
-        this.messageService.showMessage('Failed to transfer guest cart.', 3000);
-      },
-    });
   }
 }

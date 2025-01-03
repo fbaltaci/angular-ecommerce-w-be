@@ -1,4 +1,7 @@
-export interface IPostProduct {
+/**
+ * Interface for PostProduct
+ */
+export interface IPostProductPayload {
   productSku: string;
   productName: string;
   productPrice: number;

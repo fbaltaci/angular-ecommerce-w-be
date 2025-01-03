@@ -4,5 +4,5 @@
 export interface IUserRegisterResponse {
   message: string;
   customerId: number;
-  token: string;
+  cartId: string; // UUID
 }

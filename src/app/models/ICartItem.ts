@@ -1,5 +1,5 @@
 /**
- * Interface for the cart item
+ * Interface for CartItem
  */
 export interface ICartItem {
   productId: number;

@@ -58,7 +58,7 @@ export class HeaderComponent {
       this._ecommerceService
         .getCartItems(this.userService.cartId)
         .subscribe((cartResponse) => {
-          this.cartService.addToCart('customerCart', cartResponse.data.cartItems);
+          this.cartService.addToCart('customerCart', cartResponse.data[0].cartItems);
         });
     }
   }

@@ -2,7 +2,7 @@ import { Component, Input, OnInit } from '@angular/core';
 import { IProductDetailsResponse } from '../../models/IProductDetailsResponse';
 import { CommonModule } from '@angular/common';
 import { ECommerceService } from '../../services/ecommerce.service';
-import { ICartData } from '../../models/ICartData';
+import { ICreateCartPayload } from '../../models/ICreateCartPayload';
 import { ICartItem } from '../../models/ICartItem';
 import { MessageService } from '../../services/message.service';
 import { UserService } from '../../services/user.service';
@@ -50,9 +50,8 @@ export class ProductDetailsComponent implements OnInit {
   addToCart(productDetail: IProductDetailsResponse): void {
     const isUserLoggedIn = !!this.userService.isUserLoggedIn;
 
-    const addToCartPayload: ICartData = {
+    const addToCartPayload: ICreateCartPayload = {
       isGuest: !isUserLoggedIn,
-      cartId: this.userService.cartId,
       customerId: this.userService.customerId,
       cartItems: [
         {
@@ -87,7 +86,7 @@ export class ProductDetailsComponent implements OnInit {
       this.cartService.addToCart('guestCart', addToCartPayload.cartItems);
       this.messageService.showMessage('Item added to cart', 2000);
     } else {
-      this._ecommerceService.postCartItems(addToCartPayload).subscribe({
+      this._ecommerceService.postCart(addToCartPayload).subscribe({
         next: () => {
           this.messageService.showMessage(
             'Added to registered user cart',

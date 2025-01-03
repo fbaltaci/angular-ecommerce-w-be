@@ -5,8 +5,8 @@ import { Router, RouterModule } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 import { CheckoutDialogComponent } from '../checkout-dialog/checkout-dialog.component';
 import { CartService } from '../../services/cart.service';
-import { ICartItem } from '../../models/ICartItem';
 import { UserService } from '../../services/user.service';
+import { ICartItem } from '../../models/ICreateCartPayload';
 
 /**
  * CartPreviewComponent
@@ -48,10 +48,8 @@ export class CartPreviewComponent implements OnInit {
   ngOnInit(): void {
     if(this.userService.isUserLoggedIn) {
       const customerId = Number(localStorage.getItem('customerId')) || 0;
-      const token = localStorage.getItem('token') || '';
-      this._ecommerceService.getLastCart(customerId, token).subscribe((response) => {
-        this.cartItems = response.data?.cartItems || [];
-        console.log('Cart Items:', this.cartItems);
+      this._ecommerceService.getLastCart(customerId).subscribe((response) => {
+        this.cartItems = response.data[0].cartItems || [];
       });
     }
     this.cartService.cartItemCount.subscribe((count) => {
@@ -96,7 +94,7 @@ export class CartPreviewComponent implements OnInit {
   private fetchCartItems(): void {
     this._ecommerceService.getCartItems(this.cartId).subscribe({
       next: (response) => {
-        this.cartItems = response.data?.cartItems || [];
+        this.cartItems = response.data[0].cartItems || [];
         this.cartTotal = this.cartItems.reduce(
           (total, item) => total + item.productPrice * item.quantity,
           0

@@ -69,6 +69,7 @@ export class RegisterDialogComponent {
   submit(): void {
     if (this.registerForm.valid) {
       const payload: IUserRegisterPayload = {
+        email: this.registerForm.value.email,
         username: this.registerForm.value.username,
         password: this.registerForm.value.password,
         role: 'user',

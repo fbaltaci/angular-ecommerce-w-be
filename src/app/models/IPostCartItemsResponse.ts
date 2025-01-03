@@ -1,10 +1,17 @@
-import { ICartData } from './ICartData';
+import { ICartItem } from './ICreateCartPayload';
 
 /**
  * Interface for the response of the postCartItems method in the CartService.
  */
-export interface IPostCartItemsResponse {
+export interface ICreateCartResponse {
   message: string;
   result: string;
   data: ICartData[];
+}
+
+export interface ICartData {
+  isGuest: boolean;
+  customerId: number;
+  cartItems: ICartItem[];
+  cartId: string;
 }

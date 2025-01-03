@@ -1,7 +1,14 @@
 /**
- * Interface for Product Details Response
+ * Interface for Cart Data
  */
-export interface IProductDetailsResponse {
+export interface IUpdateCartPayload {
+  isGuest: boolean;
+  customerId: number;
+  cartId: string;
+  cartItems: ICartItem[];
+}
+
+export interface ICartItem {
   productId: number;
   quantity: number;
   productShortName: string;
