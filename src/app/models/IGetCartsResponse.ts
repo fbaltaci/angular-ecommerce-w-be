@@ -6,5 +6,5 @@ import { ICartData } from './IPostCartItemsResponse';
 export interface IGetCartsResponse {
   message: string;
   results: boolean;
-  data: ICartData[];
+  data: ICartData;
 }

@@ -61,7 +61,7 @@ export class HeaderComponent {
     if (this.isUserLoggedIn && this.cartId) {
       this._ecommerceService.getCartItems(this.cartId).subscribe({
         next: (cartResponse) => {
-          const cartItems = cartResponse.data?.[0]?.cartItems || [];
+          const cartItems = cartResponse.data?.cartItems || [];
           this.cartItemCount = cartItems.reduce(
             (total, item) => total + item.quantity,
             0

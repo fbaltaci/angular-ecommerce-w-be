@@ -77,20 +77,21 @@ export class CartPageComponent implements OnInit {
    */
   private loadUserCart(): void {
     const cartId = localStorage.getItem(this.CUSTOMER_CART_KEY);
-    if (cartId) {
-      this._ecommerceService.getCartItems(cartId).subscribe({
-        next: (response) => {
-          this.cartItems = response.data[0].cartItems;
-          this.calculateCartTotal();
-        },
-        error: (error) => {
-          console.error('Error fetching user cart:', error);
-          this.cartItems = [];
-        },
-      });
-    } else {
+    if (!cartId) {
       console.warn('No cart ID found for logged-in user.');
+      return;
     }
+    this._ecommerceService.getCartItems(cartId).subscribe({
+      next: (response) => {
+        this.cartItems = response.data?.cartItems || [];
+        this.calculateCartTotal();
+      },
+      error: (error) => {
+        console.error('Error fetching user cart:', error);
+        this.cartItems = [];
+        this.cartTotal = 0;
+      },
+    });
   }
 
   /**

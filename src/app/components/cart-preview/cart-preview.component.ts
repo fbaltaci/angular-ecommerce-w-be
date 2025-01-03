@@ -93,7 +93,7 @@ export class CartPreviewComponent implements OnInit {
   private fetchCartItems(): void {
     this._ecommerceService.getCartItems(this.cartId).subscribe({
       next: (response) => {
-        const cartData = response.data?.[0]?.cartItems || [];
+        const cartData = response.data?.cartItems || [];
         this.cartItems = cartData;
         this.cartItemCount = cartData.reduce((count, item) => count + item.quantity, 0);
         this.cartTotal = cartData.reduce((total, item) => total + item.productPrice * item.quantity, 0);

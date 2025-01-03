@@ -32,10 +32,11 @@ export class LogOutDialogComponent {
   /**
    * Confirm sign out
    */
-  confirmSignOut(): void {
+  confirmLogOut(): void {
     localStorage.clear();
     localStorage.setItem('isUserLoggedIn', 'false');
     this.dialogRef.close(true);
+    window.location.reload();
   }
 }
  

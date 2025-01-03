@@ -14,7 +14,6 @@ import { CommonModule } from '@angular/common';
 import { IUserLoginPayload } from '../../models/IUserLoginPayload';
 import { MessageService } from '../../services/message.service';
 import { ICreateCartPayload } from '../../models/ICreateCartPayload';
-import { IUserLoginResponse } from '../../models/IUserLoginResponse';
 
 /**
  * LoginDialogComponent
@@ -108,42 +107,6 @@ export class LoginDialogComponent {
   }
 
   /**
-   * Handles login success
-   * 
-   * @param response IUserLoginResponse
-   */
-  private handleLoginSuccess(response: IUserLoginResponse): void {
-    const { customerId, token } = response;
-    localStorage.setItem('customerId', customerId.toString());
-    localStorage.setItem('token', token);
-    localStorage.setItem('isUserLoggedIn', 'true');
-
-    this.dialogRef.close({ success: true });
-    this.messageService.showMessage('Login is successful.', 3000);
-
-    const guestCart = this.getCartFromLocalStorage(this.GUEST_CART_KEY);
-    if (guestCart.length > 0) {
-      const payload: ICreateCartPayload = {
-        isGuest: false,
-        customerId,
-        cartItems: guestCart,
-      };
-  
-      this._ecommerceService.postCart(payload).subscribe({
-        next: (response) => {
-          const cartId = response.data?.[0]?.cartId || '';
-          if (cartId) {
-            localStorage.setItem(this.CUSTOMER_CART_KEY, cartId);
-          }
-        },
-        error: () => this.messageService.showMessage('Failed to migrate guest cart.', 3000),
-      });
-    } else {
-      this.fetchLastCart(customerId);
-    }
-  }
-
-  /**
    * Migrates guest cart
    * 
    * @param customerId Customer ID
@@ -164,24 +127,6 @@ export class LoginDialogComponent {
         }
       },
       error: () => this.messageService.showMessage('Failed to migrate guest cart.', 3000),
-    });
-  }
-
-  /**
-   * Fetches last cart
-   * 
-   * @param customerId Customer ID
-   */
-  private fetchLastCart(customerId: number): void {
-    this._ecommerceService.getLastCart(customerId).subscribe({
-      next: (response) => {
-        const cart = response.data?.[0];
-        if (cart) {
-          localStorage.setItem(this.CUSTOMER_CART_KEY, cart.cartId);
-          this.updateCartInLocalStorage(this.CUSTOMER_CART_KEY, cart.cartItems);
-        }
-      },
-      error: () => this.messageService.showMessage('Failed to fetch last cart.', 3000),
     });
   }
 
