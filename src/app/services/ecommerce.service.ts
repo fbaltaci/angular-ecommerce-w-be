@@ -23,7 +23,7 @@ import { IGetLastCartResponse } from '../models/IGetLastCartResponse';
 })
 export class ECommerceService {
   // Privates
-  private readonly baseURL: string = 'http://localhost:3000/api';
+  private readonly baseURL: string = 'https://expressjs-ts-ecommerce-app.onrender.com/api/ecommerce';
 
   /**
    * Constructor
