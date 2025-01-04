@@ -1,5 +1,5 @@
 /**
- * Interface for getAllProducts.data Response
+ * Interface for Product Details Response
  */
 export interface IProductDetailsResponse {
   productId: number;

@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
-import { ICartItem } from '../../models/ICartItem';
+import { ICartItem } from '../../models/ICreateCartPayload';
 import { ECommerceService } from '../../services/ecommerce.service';
 
 /**
@@ -14,14 +14,18 @@ import { ECommerceService } from '../../services/ecommerce.service';
   styleUrls: ['./cart-page.component.css'],
 })
 export class CartPageComponent implements OnInit {
-  cartItem!: ICartItem[];
+  cartItems: ICartItem[] = [];
+  isUserLoggedIn: boolean = false;
   cartTotal: number = 0;
-  customerId: number = 1773; // Use actual customer ID
+
+  // Privates
+  private readonly GUEST_CART_KEY = 'guestCart';
+  private readonly CUSTOMER_CART_KEY = 'customerCart';
 
   /**
    * Constructor
    *
-   * @param _ecommerceService ECommerce Service
+   * @param _ecommerceService ECommerceService
    */
   constructor(private _ecommerceService: ECommerceService) {}
 
@@ -29,27 +33,97 @@ export class CartPageComponent implements OnInit {
    * ngOnInit
    */
   ngOnInit(): void {
-    this.fetchCartItems();
+    this.isUserLoggedIn = !!localStorage.getItem('token');
+
+    if (this.isUserLoggedIn) {
+      this.loadUserCart();
+    } else {
+      this.loadGuestCart();
+    }
   }
 
   /**
-   * Fetches cart items for the customer and calculates total
+   * Checks out the cart items
    */
-  private fetchCartItems(): void {
-    this._ecommerceService
-      .getCartItems(this.customerId)
-      .subscribe((response) => {
-        this.cartItem = response.data.cartItems;
-        this.calculateCartTotal();
-      });
+  onCheckoutClick(): void {
+    console.log('this.cartItems: ', this.cartItems);
   }
 
   /**
-   * Calculates the total price of items in the cart
+   * Removes an item from the cart
+   *
+   * @param item - The ID of the product to remove
+   */
+  onRemoveItemFromCart(item: ICartItem): void {
+    const cartKey = this.isUserLoggedIn ? this.CUSTOMER_CART_KEY : this.GUEST_CART_KEY;
+    const currentCart = this.getCartFromLocalStorage(cartKey);
+    const updatedCart = currentCart.filter((cartItem) => cartItem.productId !== item.productId);
+
+    this.updateCartInLocalStorage(cartKey, updatedCart);
+    this.cartItems = updatedCart;
+    this.calculateCartTotal();
+  }
+
+  /**
+   * Load guest cart from localStorage
+   */
+  private loadGuestCart(): void {
+    this.cartItems = this.getCartFromLocalStorage(this.GUEST_CART_KEY);
+    this.calculateCartTotal();
+  }
+
+  /**
+   * Load user cart from API
+   */
+  private loadUserCart(): void {
+    const cartId = localStorage.getItem(this.CUSTOMER_CART_KEY);
+    if (!cartId) {
+      console.warn('No cart ID found for logged-in user.');
+      return;
+    }
+    this._ecommerceService.getCartItems(cartId).subscribe({
+      next: (response) => {
+        this.cartItems = response.data?.cartItems || [];
+        this.calculateCartTotal();
+      },
+      error: (error) => {
+        console.error('Error fetching user cart:', error);
+        this.cartItems = [];
+        this.cartTotal = 0;
+      },
+    });
+  }
+
+  /**
+   * Get cart data from localStorage
+   * @param cartKey - The key for the cart in localStorage
+   * @returns An array of cart items
+   */
+  private getCartFromLocalStorage(cartKey: string): ICartItem[] {
+    try {
+      return JSON.parse(localStorage.getItem(cartKey) || '[]');
+    } catch (error) {
+      console.error(`Error retrieving cart for key ${cartKey}:`, error);
+      return [];
+    }
+  }
+
+  /**
+   * Save updated cart to localStorage
+   * @param cartKey - The key for the cart in localStorage
+   * @param cartItems - The updated cart items
+   */
+  private updateCartInLocalStorage(cartKey: string, cartItems: ICartItem[]): void {
+    localStorage.setItem(cartKey, JSON.stringify(cartItems));
+  }
+
+  /**
+   * Calculate the total price of items in the cart
    */
   private calculateCartTotal(): void {
-    if (!this.cartItem || !Array.isArray(this.cartItem)) return;
-
-    this.cartTotal = this.cartItem.length;
+    this.cartTotal = this.cartItems.reduce(
+      (total, item) => total + item.productPrice * item.quantity,
+      0
+    );
   }
 }

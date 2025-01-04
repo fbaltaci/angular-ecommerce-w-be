@@ -1,17 +1,19 @@
-<div class="cart-preview">
-    <ul *ngIf="cartItemsResponse.length > 0; else emptyCart">
-        <li *ngFor="let cart of cartItemsResponse">
-            <ng-container *ngFor="let item of cart.data.cartItems">
-                <img [src]="item.productImageUrl" alt="Product Image" width="30" height="30" />
-                <span>{{ item.productShortName }} ({{ item.quantity }})</span>
-                <span class="price">${{ item.productPrice * item.quantity }}</span>
-            </ng-container>
-        </li>
-    </ul>
-    <ng-template #emptyCart>
-        <p>Your cart is empty.</p>
-    </ng-template>
-    <div class="cart-total">
-        Total: ${{ cartTotal }}
+<div class="cart-container">
+  <i class="bi bi-cart3 cart-icon"></i>
+  <div class="cart-preview">
+    <div class="cart-subtotal">
+      <ng-container *ngIf="cartItemCount !== 0; else emptyCart">
+        <span *ngIf="cartItemCount > 0" class="cart-count">Count: {{ cartItemCount }}</span>
+        <br>
+        <span>Subtotal: ${{ cartTotal }}</span>
+      </ng-container>
+      <ng-template #emptyCart>
+        <span>Your cart is empty.</span>
+      </ng-template>
     </div>
+    <div class="cart-actions">
+      <button class="btn btn-primary" routerLink="/cart">View Cart</button>
+      <button class="btn btn-success" (click)="onCheckoutClick()">Checkout</button>
+    </div>
+  </div>
 </div>

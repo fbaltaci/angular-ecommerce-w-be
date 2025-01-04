@@ -1,43 +1,23 @@
-<!-- Products -->
+<div class="page">
+    <!-- Category List -->
+    <div class="text-center mt-4">
+        <button [ngClass]="{'btn-active': activeCategoryName === 'all'}" class="btn btn-primary btn-sm mx-1"
+            (click)="toggleCategoryFilter('all')">All</button>
+        <button *ngFor="let category of categories" class="btn btn-primary btn-sm mx-1"
+            [ngClass]="{'btn-active': activeCategoryName === category.name}"
+            (click)="toggleCategoryFilter(category.name)">
+            {{ category.name }}
+        </button>
+    </div>
 
-<!-- Products Filters -->
-
-<div class="text-center mt-4">
-    <button class="btn btn-primary btn-sm mx-1">Fruits & Vegetables</button>
-    <button class="btn btn-primary btn-sm mx-1">Foodgrains</button>
-    <button class="btn btn-primary btn-sm mx-1">Bakery</button>
-    <button class="btn btn-primary btn-sm mx-1">Beverages</button>
-    <button class="btn btn-primary btn-sm mx-1">Snacks</button>
-    <button class="btn btn-primary btn-sm mx-1">Soft Drinks</button>
-    <button class="btn btn-primary btn-sm mx-1">Fragrances</button>
-    <button class="btn btn-primary btn-sm mx-1">T-shirts</button>
-    <button class="btn btn-primary btn-sm mx-1">Technology</button>
-    <button class="btn btn-primary btn-sm mx-1">String</button>
-</div>
-
-<!-- Products List -->
-
-<div class="row mt-4" *ngIf="getAllProductsResponse.data.length > 0; else loading">
-    <div class="col-md-3 mb-4" *ngFor="let productDetails of getAllProductsResponse.data">
-        <div class="card h-100">
-            <img [src]="productDetails.productImageUrl" class="card-img-top"
-                alt="{{ productDetails.productShortName }}">
-            <div class="card-body">
-                <h5 class="card-title">{{ productDetails.productName }}</h5>
-                <p class="card-text text-danger">{{ productDetails.productPrice }}</p>
-                <div>
-                    <span class="text-muted">({{ productDetails.categoryName }})</span>
-                </div>
-            </div>
-            <div class="card-footer bg-transparent">
-                <button class="btn btn-success btn-sm w-100">
-                    <i class="fas fa-shopping-cart"></i> Add to Cart
-                </button>
-            </div>
+    <!-- Products List -->
+    <div class="row mt-4" *ngIf="productsList.length > 0; else loading">
+        <div class="col-md-3 mb-4" *ngFor="let productDetails of productsList">
+            <app-product-details [productDetail]="productDetails"></app-product-details>
         </div>
     </div>
-</div>
 
-<ng-template #loading>
-    <p>Loading products...</p>
-</ng-template>
+    <ng-template #loading>
+        <p>Loading products...</p>
+    </ng-template>
+</div>

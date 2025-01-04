@@ -3,6 +3,8 @@ import { Component } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { ECommerceService } from '../../services/ecommerce.service';
 import { CartPreviewComponent } from '../cart-preview/cart-preview.component';
+import { TopNavComponent } from '../top-nav/top-nav.component';
+import { ProfilePreviewComponent } from '../profile-preview/profile-preview.component';
 
 /**
  * Header component
@@ -10,14 +12,22 @@ import { CartPreviewComponent } from '../cart-preview/cart-preview.component';
 @Component({
   selector: 'app-header',
   standalone: true,
-  imports: [CommonModule, RouterModule, CartPreviewComponent],
+  imports: [
+    CommonModule,
+    RouterModule,
+    CartPreviewComponent,
+    TopNavComponent,
+    ProfilePreviewComponent,
+  ],
   templateUrl: './header.component.html',
   styleUrls: ['./header.component.css'],
 })
 export class HeaderComponent {
   showCartPreview: boolean = false;
-  customerId: number = 1773; // Replace with actual customer ID from your logic
+  showProfilePreview: boolean = false;
+  cartId: string = '';
   cartItemCount: number = 0;
+  isUserLoggedIn: boolean = false;
 
   /**
    * Constructor
@@ -26,21 +36,54 @@ export class HeaderComponent {
    */
   constructor(private _ecommerceService: ECommerceService) {}
 
+
   /**
    * ngOnInit
    */
   ngOnInit(): void {
+    this.checkLoginState();
     this.fetchCartItemsCount();
+  }
+
+  /**
+   * Check login state from localStorage
+   */
+  private checkLoginState(): void {
+    const token = localStorage.getItem('token');
+    this.isUserLoggedIn = !!token;
+    this.cartId = localStorage.getItem('cartId') || '';
   }
 
   /**
    * Fetches cart items for the customer and calculates the total count
    */
   private fetchCartItemsCount(): void {
-    this._ecommerceService
-      .getCartItems(this.customerId)
-      .subscribe((cartResponse) => {
-        this.cartItemCount = cartResponse.data.cartItems.length;
+    if (this.isUserLoggedIn && this.cartId) {
+      this._ecommerceService.getCartItems(this.cartId).subscribe({
+        next: (cartResponse) => {
+          const cartItems = cartResponse.data?.cartItems || [];
+          this.cartItemCount = cartItems.reduce(
+            (total, item) => total + item.quantity,
+            0
+          );
+        },
+        error: (error) => {
+          console.error('Error fetching cart items:', error);
+        },
       });
+    } else {
+      this.fetchGuestCartItemCount();
+    }
+  }
+
+  /**
+   * Fetch guest cart item count from localStorage
+   */
+  private fetchGuestCartItemCount(): void {
+    const guestCart = JSON.parse(localStorage.getItem('guestCart') || '[]');
+    this.cartItemCount = guestCart.reduce(
+      (total: number, item: any) => total + item.quantity,
+      0
+    );
   }
 }

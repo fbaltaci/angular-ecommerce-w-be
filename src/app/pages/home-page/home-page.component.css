@@ -1,0 +1,63 @@
+.home-container {
+  padding: 20px;
+}
+
+.hero-section {
+  background: linear-gradient(to bottom right, #007bff, #0056b3);
+  color: white;
+  padding: 50px 20px;
+  border-radius: 8px;
+}
+
+.hero-section h1 {
+  font-size: 2.5rem;
+}
+
+.hero-section p {
+  font-size: 1.2rem;
+  margin-top: 10px;
+}
+
+.hero-section .btn-primary {
+  font-size: 1rem;
+  padding: 10px 20px;
+}
+
+.highlights-section .highlight-card {
+  background-color: #ffffff;
+  border: 1px solid #eaeaea;
+  border-radius: 8px;
+  transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.highlights-section .highlight-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+}
+
+.highlights-section .highlight-card .highlight-icon {
+  font-size: 2.5rem;
+  color: #007bff;
+}
+
+.highlights-section .highlight-card h5 {
+  font-size: 1.2rem;
+  margin-top: 10px;
+  color: #333;
+}
+
+.highlights-section .highlight-card p {
+  font-size: 0.9rem;
+  color: #666;
+}
+
+.tech-stack-section h2 {
+  font-size: 2rem;
+  color: #333;
+}
+
+.tech-stack-section .badge {
+  font-size: 1rem;
+  padding: 10px 15px;
+  border-radius: 20px;
+}

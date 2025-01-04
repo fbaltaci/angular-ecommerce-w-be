@@ -3,5 +3,6 @@
  */
 export interface IUserLoginResponse {
   message: string;
-  token: string;
+  customerId: number;
+  token: string; // JWT Token
 }

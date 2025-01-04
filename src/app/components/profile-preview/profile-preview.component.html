@@ -1,0 +1,20 @@
+<div class="cart-container">
+    <i class="bi bi-cart3 cart-icon"></i>
+    <div class="profile-preview">
+        <ng-container *ngIf="isUserLoggedIn; else guestView">
+            <div class="profile-info">
+                <p>Welcome</p>
+                <p>Customer: {{ customerId }}</p>
+            </div>
+            <div class="sign-out">
+                <button class="btn btn-primary" (click)="onLogOut()">Sign Out</button>
+            </div>
+        </ng-container>
+        <ng-template #guestView>
+            <div class="profile-actions">
+                <button class="btn btn-primary" (click)="onRegisterClick()">Register</button>
+                <button class="btn btn-success" (click)="onLoginClick()">Login</button>
+            </div>
+        </ng-template>
+    </div>
+</div>

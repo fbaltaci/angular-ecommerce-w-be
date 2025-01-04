@@ -1,1 +1,33 @@
-<p>about-us-page works!</p>
+<div class="about-container">
+  <div class="about-header text-center">
+    <h1>About Our Store</h1>
+    <p class="tagline">{{ tagline }}</p>
+  </div>
+
+  <div class="about-body">
+    <h2>Who We Are</h2>
+    <p>{{ aboutUsDescription }}</p>
+
+    <h2>Our Mission</h2>
+    <p>{{ mission }}</p>
+
+    <h2>What We Offer</h2>
+    <ul class="offerings-list">
+      <li *ngFor="let offering of offerings">
+        <i class="bi bi-check-circle"></i> {{ offering }}
+      </li>
+    </ul>
+
+    <h2>Why Choose Us</h2>
+    <p>{{ uniqueSellingPoints }}</p>
+  </div>
+
+  <div class="about-footer">
+    <h2>Connect With Us</h2>
+    <p>Have questions or want to learn more about our products? Reach out today!</p>
+    <ul class="contact-list">
+      <li><a [href]="links.emailLink"><i class="bi bi-envelope"></i> {{ links.email }}</a></li>
+      <li><a [href]="links.phoneLink"><i class="bi bi-telephone"></i> {{ links.phone }}</a></li>
+    </ul>
+  </div>
+</div>
