@@ -19,17 +19,16 @@ import { ICreateCartPayload } from '../../models/ICreateCartPayload';
  * LoginDialogComponent
  */
 @Component({
-  selector: 'app-login-dialog',
-  standalone: true,
-  imports: [
-    CommonModule,
-    ReactiveFormsModule,
-    MatFormFieldModule,
-    MatInputModule,
-    MatButtonModule,
-  ],
-  templateUrl: './login-dialog.component.html',
-  styleUrl: './login-dialog.component.css',
+    selector: 'app-login-dialog',
+    imports: [
+        CommonModule,
+        ReactiveFormsModule,
+        MatFormFieldModule,
+        MatInputModule,
+        MatButtonModule,
+    ],
+    templateUrl: './login-dialog.component.html',
+    styleUrl: './login-dialog.component.css'
 })
 export class LoginDialogComponent {
   loginForm: FormGroup;

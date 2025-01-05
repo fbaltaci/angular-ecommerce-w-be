@@ -19,17 +19,16 @@ import { LoginDialogComponent } from '../login-dialog/login-dialog.component';
  * RegisterDialogComponent
  */
 @Component({
-  selector: 'app-register-dialog',
-  standalone: true,
-  imports: [
-    CommonModule,
-    ReactiveFormsModule,
-    MatFormFieldModule,
-    MatInputModule,
-    MatButtonModule,
-  ],
-  templateUrl: './register-dialog.component.html',
-  styleUrls: ['./register-dialog.component.css'],
+    selector: 'app-register-dialog',
+    imports: [
+        CommonModule,
+        ReactiveFormsModule,
+        MatFormFieldModule,
+        MatInputModule,
+        MatButtonModule,
+    ],
+    templateUrl: './register-dialog.component.html',
+    styleUrls: ['./register-dialog.component.css']
 })
 export class RegisterDialogComponent {
   isUserRegistered: boolean = false;

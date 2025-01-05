@@ -10,17 +10,16 @@ import { ProfilePreviewComponent } from '../profile-preview/profile-preview.comp
  * Header component
  */
 @Component({
-  selector: 'app-header',
-  standalone: true,
-  imports: [
-    CommonModule,
-    RouterModule,
-    CartPreviewComponent,
-    TopNavComponent,
-    ProfilePreviewComponent,
-  ],
-  templateUrl: './header.component.html',
-  styleUrls: ['./header.component.css'],
+    selector: 'app-header',
+    imports: [
+        CommonModule,
+        RouterModule,
+        CartPreviewComponent,
+        TopNavComponent,
+        ProfilePreviewComponent,
+    ],
+    templateUrl: './header.component.html',
+    styleUrls: ['./header.component.css']
 })
 export class HeaderComponent {
   showCartPreview: boolean = false;

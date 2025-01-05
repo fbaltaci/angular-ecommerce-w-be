@@ -10,11 +10,10 @@ import { CONSTANTS } from '../../constants/constants';
  * ProductsPageComponent
  */
 @Component({
-  selector: 'app-products-page',
-  standalone: true,
-  imports: [CommonModule, ProductDetailsComponent],
-  templateUrl: './products-page.component.html',
-  styleUrl: './products-page.component.css',
+    selector: 'app-products-page',
+    imports: [CommonModule, ProductDetailsComponent],
+    templateUrl: './products-page.component.html',
+    styleUrl: './products-page.component.css'
 })
 export class ProductsPageComponent {
   categories = CONSTANTS.CATEGORIES;

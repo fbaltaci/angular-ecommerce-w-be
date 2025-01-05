@@ -10,11 +10,10 @@ import { ProductDetailsComponent } from '../../components/product-details/produc
  * HomePageComponent
  */
 @Component({
-  selector: 'app-home-page',
-  standalone: true,
-  imports: [CommonModule, RouterModule, ProductDetailsComponent],
-  templateUrl: './home-page.component.html',
-  styleUrl: './home-page.component.css',
+    selector: 'app-home-page',
+    imports: [CommonModule, RouterModule, ProductDetailsComponent],
+    templateUrl: './home-page.component.html',
+    styleUrl: './home-page.component.css'
 })
 export class HomePageComponent {
   /**

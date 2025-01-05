@@ -10,11 +10,10 @@ import { LogOutDialogComponent } from '../logout-dialog/logout-dialog.component'
  * ProfilePreviewComponent
  */
 @Component({
-  selector: 'app-profile-preview',
-  standalone: true,
-  imports: [RouterModule, CommonModule],
-  templateUrl: './profile-preview.component.html',
-  styleUrl: './profile-preview.component.css',
+    selector: 'app-profile-preview',
+    imports: [RouterModule, CommonModule],
+    templateUrl: './profile-preview.component.html',
+    styleUrl: './profile-preview.component.css'
 })
 export class ProfilePreviewComponent {
   isUserLoggedIn: boolean = false;
