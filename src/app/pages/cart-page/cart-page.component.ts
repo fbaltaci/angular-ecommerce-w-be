@@ -7,11 +7,10 @@ import { ECommerceService } from '../../services/ecommerce.service';
  * Cart Page Component
  */
 @Component({
-  selector: 'app-cart-page',
-  standalone: true,
-  imports: [CommonModule],
-  templateUrl: './cart-page.component.html',
-  styleUrls: ['./cart-page.component.css'],
+    selector: 'app-cart-page',
+    imports: [CommonModule],
+    templateUrl: './cart-page.component.html',
+    styleUrls: ['./cart-page.component.css']
 })
 export class CartPageComponent implements OnInit {
   cartItems: ICartItem[] = [];

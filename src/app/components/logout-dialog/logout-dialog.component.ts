@@ -5,11 +5,10 @@ import { MatDialogRef } from '@angular/material/dialog';
  * LogOutDialogComponent
  */
 @Component({
-  selector: 'app-logout-dialog',
-  standalone: true,
-  imports: [],
-  templateUrl: './logout-dialog.component.html',
-  styleUrl: './logout-dialog.component.css',
+    selector: 'app-logout-dialog',
+    imports: [],
+    templateUrl: './logout-dialog.component.html',
+    styleUrl: './logout-dialog.component.css'
 })
 export class LogOutDialogComponent {
 

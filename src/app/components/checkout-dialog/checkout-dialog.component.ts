@@ -6,11 +6,10 @@ import { Router } from '@angular/router';
  * CheckoutDialogComponent
  */
 @Component({
-  selector: 'app-checkout-dialog',
-  standalone: true,
-  imports: [MatDialogModule],
-  templateUrl: './checkout-dialog.component.html',
-  styleUrl: './checkout-dialog.component.css',
+    selector: 'app-checkout-dialog',
+    imports: [MatDialogModule],
+    templateUrl: './checkout-dialog.component.html',
+    styleUrl: './checkout-dialog.component.css'
 })
 export class CheckoutDialogComponent {
   /**

@@ -10,11 +10,10 @@ import { ICartItem } from '../../models/ICreateCartPayload';
  * CartPreviewComponent
  */
 @Component({
-  selector: 'app-cart-preview',
-  standalone: true,
-  imports: [RouterModule, CommonModule],
-  templateUrl: './cart-preview.component.html',
-  styleUrls: ['./cart-preview.component.css']
+    selector: 'app-cart-preview',
+    imports: [RouterModule, CommonModule],
+    templateUrl: './cart-preview.component.html',
+    styleUrls: ['./cart-preview.component.css']
 })
 export class CartPreviewComponent implements OnInit {
   @Input() cartId: string = '';

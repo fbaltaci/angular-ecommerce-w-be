@@ -9,17 +9,16 @@ import { FooterComponent } from './components/footer/footer.component';
  * AppComponent
  */
 @Component({
-  selector: 'app-root',
-  standalone: true,
-  imports: [
-    RouterModule,
-    CommonModule,
-    HeaderComponent,
-    FooterComponent,
-    MatDialogModule,
-  ],
-  templateUrl: './app.component.html',
-  styleUrls: ['./app.component.css'],
+    selector: 'app-root',
+    imports: [
+        RouterModule,
+        CommonModule,
+        HeaderComponent,
+        FooterComponent,
+        MatDialogModule,
+    ],
+    templateUrl: './app.component.html',
+    styleUrls: ['./app.component.css']
 })
 export class AppComponent implements OnInit{
   /**

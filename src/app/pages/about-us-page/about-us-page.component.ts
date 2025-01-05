@@ -5,11 +5,10 @@ import { Component } from '@angular/core';
  * AboutUsPageComponent
  */
 @Component({
-  selector: 'app-about-us-page',
-  standalone: true,
-  imports: [CommonModule],
-  templateUrl: './about-us-page.component.html',
-  styleUrls: ['./about-us-page.component.css'],
+    selector: 'app-about-us-page',
+    imports: [CommonModule],
+    templateUrl: './about-us-page.component.html',
+    styleUrls: ['./about-us-page.component.css']
 })
 export class AboutUsPageComponent {
   tagline: string = 'Your one-stop shop for quality and convenience.';
